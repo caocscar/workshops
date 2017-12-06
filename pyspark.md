@@ -54,7 +54,7 @@ Let's create a SQLContext
 As with all data analysis, you can either:
 1. Create data from scratch
 2. Read it in from an external data source
-The goal is to get it into a RDD.
+The goal is to get it into a RDD and eventually a DataFrame
 
 ## Parallelized Collections
 ```python
@@ -104,18 +104,53 @@ Parse each row specifying delimiter
 `columns = lines.map(lambda x: x.split(','))`
 
 Create a RDD of `Row` objects
-
-`table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), TxDevice=int(x[2]), Gentime=int(x[3]), Latitude=float(x[4]),      Longitude=float(x[5]), Elevation=float(x[6]), Speed=float(x[7]), Heading=float(x[8]), Yawrate=float(x[9])) )`
-
-Create a DataFrame from RDD of `Row` objects
+```
+from pyspark.sql import Row
+table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), TxDevice=int(x[2]), Gentime=int(x[3]), Latitude=float(x[4]),      Longitude=float(x[5]), Elevation=float(x[6]), Speed=float(x[7]), Heading=float(x[8]), Yawrate=float(x[9])) )
+```
+Create a DataFrame from RDD of `Row` objects and view
 ```
 bsm = sqlContext.createDataFrame(table)
+bsm
 bsm.show(5)
-bsm.dtypes
 ```
+**Note:** Columns are now in alphabetical order and not in order constructed. Technically, column order makes no difference. Visually, sometimes it does.
 
 ### Parquet Files
-Parquet is an open-source column-store data format in Hadoop. That's all I'm going to say about that.
+Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder. That's all I'm going to say about that.
+```
+foldername = '41300'
+df = sqlContext.read.parquet(foldername)
+```
+
+## SparkSQL
+You can perform SQL queries on Spark DataFrames after you register them as a table
+
+### Set up a Temp Table
+`df.registerTempTable('Bsm')`
+
+### SQL Queries
+Then you can start querying the table like a regular database.
+```
+records = sqlContext.sql('SELECT COUNT(*) as Rows FROM Bsm')
+trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId')
+driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')
+area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.0 and 42.5 AND Longitude BETWEEN -84.0 and -83.5')
+```
+The result is always a DataFrame.  
+**Note:** No computation has been evaluated. Spark commands are evaluated lazily (i.e. when they are needed).
+
+To view the results, use the `show` method.
+```
+records.show()
+trips.show()
+driver_trips.show()
+area.show()
+```
+NOTE: Maybe Move Persistence HERE
+
+To get the number of rows in the resulting DataFrame, use the `count` method.
+`records.count()`
 
 ## Spark DataFrames
 
@@ -150,11 +185,13 @@ Parquet is an open-source column-store data format in Hadoop. That's all I'm goi
 # Plotting Data
 
 ----------------------------------------
-# Set up Temp Table
-
-# SparkSQL Commands
 
 # Save DataFrame to File
+```
+savefile = 'trips'
+trips.write.format('json').save(savefile)
+```
+**Note:** Saving to text requires the DataFrame only have one column that is of string type
 
 # Exit PySpark Interactive Shell
 Type `exit()` or press Ctrl-D
