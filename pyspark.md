@@ -1,7 +1,11 @@
 # CSCAR Workshop on PySpark and SparkSQL
+```
+export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0
+export PYSPARK_PYTHON=/sw/lsa/centos7/python-anaconda3/created-20170424/bin/python
+```
 
 ## Documentation
-The latest official Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
+The latest Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
 
 ### Introduction: Spark Overview
 Let's look at the *Overview* section. You should take away a couple of things from the Spark Overview:
@@ -123,12 +127,18 @@ foldername = '41300'
 df = sqlContext.read.parquet(foldername)
 ```
 
-## SparkSQL
+# Spark SQL
+Spark SQL is a Spark module for structured data processing.
+
+The latest SQL programming guide can be found at https://spark.apache.org/docs/latest/sql-programming-guide.html
+
 You can perform SQL queries on Spark DataFrames after you register them as a table
 
 ### Set up a Temp Table
-`df.registerTempTable('Bsm')`
-
+```
+df.registerTempTable('Bsm')`
+sqlContext.registerDataFrameAsTable(df, "myTable")
+```
 ### SQL Queries
 Then you can start querying the table like a regular database.
 ```
@@ -152,48 +162,126 @@ NOTE: Maybe Move Persistence HERE
 To get the number of rows in the resulting DataFrame, use the `count` method.
 `records.count()`
 
+You can also query parquet files directly using SQL bypassing the need for a DataFrame.
+```
+ct = sqlContext.sql('SELECT COUNT(*) as Rows FROM parquet.`{}`'.format(foldername) )
+```
+
 ## Spark DataFrames
+If you are familiar with pandas or R DataFrames, you can forget about SQL and just use the DataFrame equivalent methods.
 
-# Selecting Data
+## Selecting Data
+```
+A = df.select('longitude','latitude','elevation')
+```
+**Note:** This is probably the easiest way to reorder existing columns
 
-# Renaming Columns
+## Renaming Columns
+There are multiple ways to rename columns. Here are three ways using the `alias`, `selectExpr`, `withColumnRenamed` methods.
+```
+from pyspark.sql.functions import *
+A1 = A.select(col('longitude').alias('lon'), col('latitude').alias('lat'), 'elevation' )
+A2 = A.selectExpr("longitude as lon", "latitude as lat", "elevation")
+A3 = A.withColumnRenamed('longitude','lon') # one column at a time
+```
 
-# Filtering Rows
+## Filtering Rows
+To filter rows based on a criteria use the `filter` method. `where` can also be used as it is an alias for `filter`.  
+`df_filter = df.filter('Longitude < -84').where('Latitude > 43')`
 
-# Binning Data
+To check if the DataFrame is correct, we can use the `agg` method along with the `min`,`max` functions.
+```
+df_filter.describe(['Longitude','Latitude']).show()
+lonlat = df_filter.agg(max('Longitude'), min('Latitude') )
+lonlat.show()
+```
 
-# Miscellaneous Methods
+## Binning Data
+`splits` input datatype should match the `inputCol` datatype
+```
+from pyspark.ml.feature import Bucketizer
+buck = Bucketizer(splits=[-90.0, 40.0, 42.0, 44.0, 46.0, 90.0], inputCol='Latitude', outputCol='bins')
+binCol = buck.transform(df)
+binCol.show()
+buck.getSplits()
+```
+**Note**: It doesn't assign the bin label but rather the bin index
 
-# Merging Data
+## Miscellaneous Methods
+There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
-# Replacing Values
+## Merging Data
 
-# Group By Method
+## Replacing Values
+```
+newdf = df.replace(10, 3, ['RxDevice','TxDevice'])
+newdf.show()
+```
 
-# Adding and Deleting Columns
+## Group By Method
 
-# Applying A Function to a Dataframe
+## Adding and Deleting Columns
 
-# Duplicates
+### Adding
+To initialize with a constant
+```
+from pyspark.sql import functions as fct
+newdf = df.withColumn('colname', fct.lit(7) )
+newdf.show()
+```
 
-# Reshaping Data
+To calculate a new column based on another one
+```
+newdf = df.withColumn('colname', df['Latitude'] - 42)
+newdf.show()
+```
 
-# Converting to DateTime Format
+### Deleting
+To drop a column, use the `drop` method.  
+```
+samedf = newdf.drop('colname').show()
+samedf = newdf.drop(['colname','elevation']).show()
+```
 
-# Crosstabs
 
-# Plotting Data
+## Applying A Function to a Dataframe
+
+## Duplicates
+```
+dedupe = df.drop_duplicates(['RxDevice','FileId'])
+```
+## Reshaping Data
+No built-in method like `pd.melt`
+Check this stackoverflow answer for a homebrew solution https://stackoverflow.com/questions/41670103/pandas-melt-function-in-apache-spark
+
+## Converting to DateTime Format
+
+
+## Crosstabs
+```
+df.crosstab('RxDevice','FileId').show()
+```
+OutOfMemoryError: Java heap space
+
+## Comparison
+SQL|DataFrame
+---|---
+`SELECT COUNT(*) as Rows FROM Bsm`|`Rows = Bsm.count()`
+`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId`|
+`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|
+`SELECT * FROM Bsm WHERE Latitude BETWEEN 42.0 and 42.5 AND Longitude BETWEEN -84.0 and -83.5`|
+
 
 ----------------------------------------
 
-# Save DataFrame to File
+## Save DataFrame to File
 ```
 savefile = 'trips'
 trips.write.format('json').save(savefile)
 ```
 **Note:** Saving to text requires the DataFrame only have one column that is of string type
 
-# Exit PySpark Interactive Shell
+## Exit PySpark Interactive Shell
 Type `exit()` or press Ctrl-D
 
 
