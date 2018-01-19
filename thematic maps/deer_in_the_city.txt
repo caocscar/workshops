@@ -1,0 +1,418 @@
+city,Total,K,ABC,PDO,Lat,Lon
+Portage,191,0,5,186,42.201154,-85.580002
+Rochester Hills,150,0,2,148,42.658366,-83.149932
+Midland,137,0,1,136,43.615583,-84.247212
+Battle Creek,116,0,6,110,42.321152,-85.179714
+Farmington Hills,95,0,4,91,42.498994,-83.367717
+Ann Arbor,90,0,4,86,42.280826,-83.743038
+Novi,86,0,8,78,42.480590,-83.475491
+Auburn Hills,82,0,2,80,42.687532,-83.234103
+Lansing,81,0,0,81,42.732535,-84.555535
+Walker,77,0,2,75,43.001413,-85.768091
+Grand Rapids,63,0,1,62,42.963360,-85.668086
+Troy,58,0,5,53,42.606409,-83.149775
+Kalamazoo,57,0,1,56,42.291707,-85.587229
+Kentwood,57,0,5,52,42.869473,-85.644749
+East Lansing,55,0,3,52,42.736979,-84.483865
+Wyoming,46,0,0,46,42.913360,-85.705309
+Southfield,44,0,6,38,42.473369,-83.221873
+Sterling Heights,44,0,3,41,42.580312,-83.030203
+Norton Shores,41,0,2,39,43.168904,-86.263946
+Burton,40,0,1,39,42.999472,-83.616342
+Livonia,40,0,0,40
+Escanaba,32,0,1,31
+Charlotte,32,0,0,32
+Lapeer,31,0,0,31
+Norway,29,0,0,29
+Marquette,28,0,0,28
+Rockford,28,0,0,28
+Holland,27,0,1,26
+Gladstone,27,0,0,27
+Muskegon,25,0,1,24
+Tecumseh,25,0,0,25
+Alpena,25,0,1,24
+Grandville,25,0,0,25
+Fenton,24,0,0,24
+Coldwater,24,0,1,23
+Ithaca,24,0,0,24
+Alma,23,0,0,23
+Hillsdale,22,0,0,22
+Marshall,22,0,0,22
+Traverse City,21,0,1,20
+Petoskey,21,0,0,21
+Romulus,21,0,0,21
+Wixom,21,0,0,21
+Iron River,21,0,0,21
+Holland,20,0,2,18
+Negaunee,19,0,1,18
+Iron Mountain,19,0,0,19
+Sault Ste. Marie,19,0,0,19
+Ludington,18,0,1,17
+Swartz Creek,18,0,1,17
+Chelsea,18,0,1,17
+Jonesville,18,0,0,18
+Adrian,17,0,0,17
+Manistee,17,0,0,17
+Pontiac,16,0,1,15
+Warren,16,0,0,16
+East Jordan,16,0,0,16
+Perry,16,0,0,16
+Paw Paw,15,0,0,15
+Jackson,15,0,1,14
+Litchfield,15,0,0,15
+Lowell,14,0,1,13
+Bloomfield Hills,14,0,0,14
+Boyne City,14,0,0,14
+Westland,13,0,1,12
+Marysville,13,0,0,13
+Hastings,13,0,0,13
+Mt. Pleasant,13,0,0,13
+Mason,13,0,1,12
+Bad Axe,13,0,0,13
+Howell,12,0,0,12
+Reed City,12,0,0,12
+Goodrich,12,0,0,12
+Rochester,12,0,0,12
+Rogers City,12,0,0,12
+St. Louis,12,0,0,12
+Big Rapids,12,0,0,12
+Corunna,12,0,0,12
+Flushing,12,0,0,12
+Richmond,11,0,0,11
+Monroe,11,0,0,11
+Croswell,11,0,0,11
+Hudson,11,0,0,11
+Gibralter,11,0,0,11
+Saline,11,0,0,11
+Newaygo,10,0,0,10
+Oxford,10,0,0,10
+Springfield,10,0,0,10
+Flint,10,0,1,9
+Hart,10,0,0,10
+Holly,10,0,0,10
+Greenville,10,0,0,10
+Caro,10,0,0,10
+Flat Rock,10,0,0,10
+Franklin,10,0,0,10
+Grand Blanc,10,0,0,10
+Portland,9,0,0,9
+Clare,9,0,0,9
+Cheboygan,9,0,0,9
+Potterville,9,0,0,9
+Roscommon,9,0,0,9
+Madison Heights,9,0,1,8
+Lakeview,9,0,0,9
+East Lansing,9,0,0,9,42.736979,-84.483865
+Ferrysburg,9,0,0,9
+Rosebush,9,0,2,7
+Sturgis,9,0,0,9
+Brown City,9,0,1,8
+Niles,9,0,1,8
+Wood Haven,9,0,1,8
+Owosso,8,0,0,8
+Nashville,8,0,0,8
+Grand Ledge,8,0,0,8
+Montague,8,0,0,8
+Grand Haven,8,0,0,8
+Whitehall,8,0,0,8
+Coopersville,8,0,0,8
+Lake Isabella,8,0,0,8
+Saginaw,8,0,0,8
+Taylor,8,0,1,7
+Ishpeming,8,0,0,8
+Dundee,8,0,0,8
+Ionia,8,0,0,8
+Plainwell,8,0,0,8
+Colon,8,0,0,8
+Tawas City,8,0,0,8
+Charlevoix,8,0,0,8
+Lincoln,7,0,0,7
+Brighton,7,0,0,7
+Mattawan,7,0,0,7
+Perrinton,7,0,0,7
+Orchard Lake,7,0,0,7
+Hersey,7,0,0,7
+Alanson,7,0,0,7
+Wayland,7,0,0,7
+Peck,7,0,0,7
+Gaylord,7,0,0,7
+St. Joseph,7,0,0,7
+Rockwood,7,0,0,7
+Homer,7,0,0,7
+Hudsonville,7,0,0,7
+Beverly Hills,7,0,0,7
+Imlay City,7,0,0,7
+McBride,7,0,0,7
+Baraga,7,0,1,6
+Dearborn,7,0,0,7
+Albion,7,0,0,7
+Concord,7,0,0,7
+Detroit,7,0,1,6
+Gladwin,6,0,0,6
+Millington,6,0,0,6
+Royal Oak,6,0,1,5
+East Tawas,6,0,1,5
+Bessemer,6,0,2,4
+Standish,6,0,0,6
+South Haven,6,0,0,6
+Frankfort,6,0,0,6
+Harbor Beach,6,0,0,6
+Bay City,6,0,0,6
+Linden,6,0,0,6
+Romeo,6,0,0,6
+Bridgman,6,0,0,6
+Maple Rapids,6,0,0,6
+Applegate,6,0,0,6
+St. Clair,6,0,0,6
+Harbor Springs,6,0,0,6
+Marine City,5,0,0,5
+Stanton,5,0,0,5
+Trenton,5,0,0,5
+Ubly,5,0,0,5
+Dewitt,5,0,0,5
+Harrison,5,0,0,5
+Stockbridge,5,0,0,5
+Edmore,5,0,1,4
+Sanford,5,0,0,5
+Benzonia,5,0,0,5
+Cedar Springs,5,0,0,5
+Coleman,5,0,0,5
+Port Huron,5,0,0,5
+Mecosta,5,0,0,5
+Empire,5,0,0,5
+Lexington,5,0,0,5
+Central Lake,5,0,0,5
+Vicksburg,5,0,0,5
+Fremont,5,0,0,5
+Ortonville,5,0,0,5
+Wakefield,5,0,0,5
+Evart,5,0,0,5
+Fowlerville,5,0,0,5
+Cadillac,5,0,0,5
+Mayville,5,0,0,5
+Buchanan,5,0,0,5
+Lawton,5,0,0,5
+West Branch,5,0,0,5
+Beulah,5,0,0,5
+Port Austin,4,0,0,4
+New Baltimore,4,0,0,4
+Ypsilanti,4,0,0,4
+Sandusky,4,0,0,4
+Centreville,4,0,0,4
+Williamston,4,0,1,3
+Three Rivers,4,0,0,4
+Suttons Bay,4,0,0,4
+Scottville,4,0,0,4
+Barryton,4,0,0,4
+Union City,4,0,0,4
+Sterling,4,0,0,4
+Crystal Falls,4,0,0,4
+McBain,4,0,0,4
+Munising,4,0,0,4
+Gobles,4,0,1,3
+Casnovia,4,0,0,4
+Bangor,4,0,0,4
+Hillman,4,0,0,4
+Ravenna,4,0,0,4
+Dexter,4,0,0,4
+New Haven,4,0,0,4
+Stevensville,4,0,0,4
+Port Sanilac,4,0,0,4
+Zeeland,4,0,0,4
+Kingsford,4,0,0,4
+Middleville,4,0,0,4
+Farmington,4,0,0,4
+Muskegon Heights,4,0,0,4
+Elk Rapids,4,0,0,4
+New Buffalo,4,0,0,4
+Eaton Rapids,4,0,0,4
+Galesburg,4,0,0,4
+Cass City,3,0,0,3
+Caledonia,3,0,0,3
+Bellaire,3,0,0,3
+Saugatuck,3,0,0,3
+South Lyon,3,0,0,3
+Springport,3,0,0,3
+Walled Lake,3,0,0,3
+Au Gres,3,0,0,3
+Kingston,3,0,1,2
+Kalkaska,3,0,0,3
+Carsonville,3,0,0,3
+Zilwaukee,3,0,0,3
+Almont,3,0,0,3
+Menominee,3,0,0,3
+North Branch,3,0,0,3
+Midland,3,0,0,3
+Baldwin,3,0,1,2
+Clarkston,3,0,0,3
+Birmingham,3,0,1,2
+Unknown Community,3,0,0,3
+Spring Lake,3,0,0,3
+Allegan,3,0,0,3
+Mulliken,3,0,0,3
+Blissfield,3,0,0,3
+Morrice,3,0,0,3
+Douglas,3,0,0,3
+Milford,3,0,0,3
+Berrien Springs,3,0,0,3
+Ontonagon,3,0,0,3
+Mesick,3,0,0,3
+Kent City,3,0,0,3
+Kingsley,3,0,0,3
+Allen Park,3,0,0,3
+South Rockwood,3,0,0,3
+Lathrup Village,3,0,0,3
+Northport,3,0,0,3
+Emmett,3,0,0,3
+Southgate,3,0,0,3
+Quincy,3,0,1,2
+Mt. Clemens,2,0,0,2
+Clayton,2,0,0,2
+Onsted,2,0,0,2
+Barton Hills,2,0,0,2
+Plymouth,2,0,0,2
+Vassar,2,0,0,2
+Deckerville,2,0,0,2
+Mendon,2,0,0,2
+Laingsburg,2,0,0,2
+St. Charles,2,0,0,2
+Frankenmuth,2,0,0,2
+Birch Run,2,0,0,2
+Posen,2,0,0,2
+Onaway,2,0,0,2
+New Lothrop,2,0,0,2
+Vernon,2,0,0,2
+LeRoy,2,0,0,2
+Rose City,2,0,0,2
+Pentwater,2,0,0,2
+Sylvan Lake,2,0,0,2
+Hartford,2,0,0,2
+Utica,2,0,0,2
+Manchester,2,0,0,2
+Casnovia,2,0,0,2
+Pierson,2,0,0,2
+Howard City,2,0,0,2
+Carson City,2,0,0,2
+Carleton,2,0,0,2
+Lake City,2,0,0,2
+Dearborn Heights,2,0,0,2
+Carney,2,0,0,2
+Morley,2,0,0,2
+Freesoil,2,0,0,2
+Fountain,2,0,0,2
+Custer,2,0,0,2
+Kaleva,2,0,0,2
+New Era,2,0,0,2
+Harrisville,2,0,0,2
+Port Hope,2,0,0,2
+Davison,2,0,0,2
+Niles,2,0,0,2
+Cassopolis,2,0,0,2
+Breckenridge,2,0,0,2
+Lyons,2,0,0,2
+Bronson,2,0,0,2
+Omer,2,0,0,2
+Twining,2,0,0,2
+Houghton,2,0,0,2
+L'Anse,2,0,0,2
+Shepherd,2,0,0,2
+Shoreham,2,0,0,2
+Grand Beach,2,0,0,2
+Gaastra,2,0,0,2
+Auburn,2,0,0,2
+Benton Harbor,2,0,0,2
+Leslie,2,0,0,2
+Belding,2,0,0,2
+Elberta,2,0,0,2
+Pewamo,2,0,0,2
+Otisville,2,0,0,2
+Richland,2,0,0,2
+Honor,2,0,0,2
+Vermontville,2,0,0,2
+Olivet,2,0,0,2
+Otsego,2,0,0,2
+Farwell,2,0,0,2
+Lansing,2,0,0,2
+Grayling,2,0,0,2
+Sparta,2,0,0,2
+St. Johns,2,0,0,2
+Fennville,2,0,0,2
+Eagle,1,0,0,1
+Chesaning,1,0,0,1
+Lake Linden,1,0,0,1
+Bellevue,1,0,0,1
+North Muskegon,1,0,0,1
+Lakewood Club,1,0,0,1
+Vanderbilt,1,0,0,1
+Watervliet,1,0,0,1
+Kinde,1,0,0,1
+Gagetown,1,0,0,1
+Galien,1,0,0,1
+Elsie,1,0,0,1
+Hesperia,1,0,0,1
+Sheridan,1,0,0,1
+Garden,1,0,0,1
+Fowler,1,0,0,1
+Webberville,1,0,0,1
+Luna Pier,1,0,0,1
+Estral Beach,1,0,0,1
+Thompsonville,1,0,0,1
+Millersburg,1,0,0,1
+Merrill,1,0,0,1
+Capac,1,0,0,1
+Hancock,1,0,1,0
+Forestville,1,0,0,1
+Richmond,1,0,0,1
+Mackinaw City,1,0,0,1
+Boyne Falls,1,0,0,1
+Constantine,1,0,0,1
+Pleasant Ridge,1,0,0,1
+Ironwood,1,0,0,1
+Edwardsburg,1,0,0,1
+Dowagiac,1,0,0,1
+Northville,1,0,0,1
+Leonard,1,0,0,1
+Tekonsha,1,0,0,1
+Oakley,1,0,0,1
+Marlette,1,0,0,1
+Athens,1,0,0,1
+Manistique,1,0,0,1
+North Adams,1,0,0,1
+Reading,1,0,0,1
+Bancroft,1,0,0,1
+Bingham Farms,1,0,0,1
+Marion,1,0,0,1
+Lennon,1,0,0,1
+Wolverine,1,0,0,1
+White Cloud,1,0,0,1
+Metamora,1,0,0,1
+Parchment,1,0,0,1
+Caspian,1,0,0,1
+Clare,1,0,0,1
+Brooklyn,1,0,0,1
+Parma,1,0,0,1
+Copemish,1,0,0,1
+Bear Lake,1,0,0,1
+St. Clair Shores,1,0,0,1
+Roseville,1,0,0,1
+Inkster,1,0,0,1
+East Grand Rapids,1,0,0,1
+Sand Lake,1,0,0,1
+South Haven,1,0,0,1
+Morenci,1,0,0,1
+Clinton,1,0,0,1
+Wayne,1,0,0,1
+Buckley,1,0,0,1
+Traverse City,1,0,0,1
+Clifford,1,0,0,1
+Harrietta,1,0,0,1
+Manton,1,0,0,1
+Milan,1,0,0,1
+Ovid,1,0,0,1
+Pinconning,1,0,0,1
+Saranac,1,0,0,1
+Powers,1,0,0,1
+Stanwood,1,0,0,1
+Stephenson,1,0,0,1
+Essexville,1,0,0,1
+Daggett,1,0,0,1
