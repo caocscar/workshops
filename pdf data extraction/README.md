@@ -5,6 +5,6 @@ There are 2 Jupyter Notebooks for this workshop (preferably done in this order):
 2. PDF Miner - `PDFMiner workshop.ipynb`
 
 ## External Files
-The "workshop_registration.pdf" is missing for privacy reasons. [TODO] Find a new pdf to use
+The `workshop_registration.pdf` is missing for privacy reasons. [TODO] Find a new pdf to use
 
 
