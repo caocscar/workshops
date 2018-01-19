@@ -1,6 +1,7 @@
 # CSCAR Workshops
 This is a list of some CSCAR Workshops contained in this repository.
 - Google Fusion Tables
+- GeoPandas
 - Regular Expressions
 - Introduction to Matlab
 - Introduction to Python
@@ -10,11 +11,6 @@ This is a list of some CSCAR Workshops contained in this repository.
 - Thematic Maps with Python
 - Web Scraping with Python
   - HTML
-  - Google APIs
-    - Geocoding API
-    - Directions API
-    - Places API    
+  - Google APIs 
   - YouTube API
   - Twitter APIs
-    - Search API
-    - Streaming API
