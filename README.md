@@ -14,6 +14,6 @@ This is a list of some CSCAR Workshops contained in this repository.
     - Directions API
     - Places API    
   - YouTube API
-  - Twitter API
+  - Twitter APIs
     - Search API
     - Streaming API
