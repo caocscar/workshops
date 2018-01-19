@@ -2,6 +2,7 @@
 This is a list of some CSCAR Workshops contained in this repository.
 - Google Fusion Tables
 - GeoPandas
+- Geospatial Analysis with Python
 - Regular Expressions
 - Introduction to Matlab
 - Introduction to Python
