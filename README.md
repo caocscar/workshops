@@ -7,3 +7,13 @@ This is a list of some CSCAR Workshops contained in this repository.
 - Introduction to SQL
 - Extracting Data from PDFs
 - PySpark and SparkSQL
+- Web Scraping with Python
+  - HTML
+  - Google APIs
+    - Geocoding API
+    - Directions API
+    - Places API    
+  - YouTube API
+  - Twitter API
+    - Search API
+    - Streaming API
