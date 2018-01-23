@@ -100,6 +100,13 @@ counter.value
 ## Read in Different Filetypes
 PySpark can create RDDs from any storage source supported by Hadoop. This includes text files. We'll work with text files and another format called parquet.
 
+## JSON Line Files 
+The JSON Lines (also called newline-delimited JSON) format is where each line contains a valid JSON object. 
+```
+filepath = '/var/reddit/RC_2007-07'
+df = spark.read.json(filepath)
+```
+
 ## Text Files
 Read in text file into a RDD
 ```
