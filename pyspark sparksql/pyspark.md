@@ -1,4 +1,7 @@
 # CSCAR Workshop on PySpark and SparkSQL
+
+## Setting Python Version 
+Change Python version for PySpark to Python 3.X (instead of default Python 2.7)
 ```
 export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0
 export PYSPARK_PYTHON=/sw/lsa/centos7/python-anaconda3/created-20170424/bin/python
