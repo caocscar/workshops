@@ -10,7 +10,7 @@ export PYSPARK_PYTHON=/sw/lsa/centos7/python-anaconda3/created-20170424/bin/pyth
 ## Documentation
 The latest Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
 
-### Introduction: Spark Overview
+### Introduction Spark Overview
 Let's look at the *Overview* section. You should take away a couple of things from the Spark Overview:
 1. RDD (Resilient Distributed Dataset). The *resilient* part alludes to the fact that it can automatically recover from node failures. The *distributed* part refers to the fact that your data is partitioned across nodes in the cluster and will be operated on in parallel.
 2. Spark performs in-memory computation. It does not write/read intermediate results to disk.
@@ -221,6 +221,7 @@ buck.getSplits()
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
 ## Merging Data
+df_join = df.join(df2, on='name', how='outer')
 
 ## Replacing Values
 ```
@@ -256,6 +257,7 @@ samedf = newdf.drop(['colname','elevation']).show()
 
 ## Applying A Function to a Dataframe
 
+
 ## Duplicates
 ```
 dedupe = df.drop_duplicates(['RxDevice','FileId'])
@@ -266,6 +268,8 @@ Check this stackoverflow answer for a homebrew solution https://stackoverflow.co
 
 ## Converting to DateTime Format
 
+## Save as a Persistent Table
+df.write.option("path", "/some/path").saveAsTable("t")
 
 ## Crosstabs
 ```
