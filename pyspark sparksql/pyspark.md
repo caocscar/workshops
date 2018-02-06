@@ -128,7 +128,7 @@ bsm = sqlContext.createDataFrame(table)
 bsm
 bsm.show(5)
 ```
-**Note:** Columns are now in alphabetical order and not in order constructed. Technically, column order makes no difference. Visually, sometimes it does.
+**Note:** Columns are now in alphabetical order and not in order constructed. Analytically, column order makes no difference. Visually, sometimes it does.
 
 ### Parquet Files
 Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder. That's all I'm going to say about that.
@@ -184,7 +184,7 @@ If you are familiar with pandas or R DataFrames, you can forget about SQL and ju
 ```
 A = df.select('longitude','latitude','elevation')
 ```
-**Note:** This is probably the easiest way to reorder existing columns
+**Note:** This is probably the easiest way to reorder existing columns but it creates a new DataFrame
 
 ## Renaming Columns
 There are multiple ways to rename columns. Here are three ways using the `alias`, `selectExpr`, `withColumnRenamed` methods.
@@ -221,7 +221,9 @@ buck.getSplits()
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
 ## Merging Data
-df_join = df.join(df2, on='name', how='outer')
+A = df.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation').persist()
+B = df.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed').persist()
+C = A.join(B, on=['RxDevice','FileId','Gentime'], how='inner')
 
 ## Replacing Values
 ```
@@ -269,7 +271,18 @@ Check this stackoverflow answer for a homebrew solution https://stackoverflow.co
 ## Converting to DateTime Format
 
 ## Save as a Persistent Table
-df.write.option("path", "/some/path").saveAsTable("t")
+```
+df.write.option("path","persistTable").saveAsTable("bsm2")
+```
+This will create a new folder in your HDFS called persistTable with files stored in a snappy parquet format
+
+## Read in Persistent Table
+```
+from pyspark.sql import HiveContext
+hive_context = HiveContext(sc)
+bank = hive_context.table("bsm2")
+bank.show()
+```
 
 ## Crosstabs
 ```
