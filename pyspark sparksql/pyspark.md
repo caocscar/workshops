@@ -258,7 +258,19 @@ samedf = newdf.drop(['colname','elevation']).show()
 
 
 ## Applying A Function to a Dataframe
+```
+from pyspark.sql.types import IntegerType
+from pyspark.sql.functions import udf
 
+f1 = udf(lambda x: len(str(x)), IntegerType()) # if the function returns an int
+# Using the knowledge we've gained so far, 
+newdf = df.withColumn("newColumn", f1("Speed"))
+newdf.show()
+# Alternatively
+S = df.select('Speed', f1("Speed").alias("newCol"))
+S.show()
+```
+`udf` stands for user defined function.
 
 ## Duplicates
 ```
@@ -270,18 +282,15 @@ Check this stackoverflow answer for a homebrew solution https://stackoverflow.co
 
 ## Converting to DateTime Format
 
-## Save as a Persistent Table
+## Save DataFrame as a Persistent Table
 ```
-df.write.option("path","persistTable").saveAsTable("bsm2")
+df.write.option("path","myTable").saveAsTable("bsm2")
 ```
-This will create a new folder in your HDFS called persistTable with files stored in a snappy parquet format
+This will create a new folder in your HDFS called `myTable` with the files stored in snappy parquet format
 
 ## Read in Persistent Table
 ```
-from pyspark.sql import HiveContext
-hive_context = HiveContext(sc)
-bank = hive_context.table("bsm2")
-bank.show()
+df = sqlContext.read.parquet('myTable')
 ```
 
 ## Crosstabs
@@ -302,11 +311,36 @@ SQL|DataFrame
 ----------------------------------------
 
 ## Save DataFrame to File
+Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
+
+File formats available for saving the DataFrame are:
+1. csv (really any delimiter)
+2. json
+3. parquet w/ snappy
+4. ORC w/ snappy
+
+### CSV
 ```
-savefile = 'trips'
-trips.write.format('json').save(savefile)
+trips.write.csv('alexander', sep=',', header=True)
 ```
-**Note:** Saving to text requires the DataFrame only have one column that is of string type
+The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default)
+
+The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
+
+```
+trips.write.mode('overwrite').json('alexander')
+trips.write.mode('overwrite').parquet('alexander')
+trips.write.mode('overwrite').orc('alexander')
+```
+
+### Single File
+You can use the `coalesce` method to return a new DataFrame that has exactly *N* partitions.
+```
+trips.coalesce(1).write.csv('alexander')
+```
+The result is still a folder called `alexander` but this time only with a single file (partition)
+
+**Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
 
 ## Exit PySpark Interactive Shell
 Type `exit()` or press Ctrl-D
