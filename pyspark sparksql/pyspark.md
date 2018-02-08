@@ -1,4 +1,4 @@
-# CSCAR Workshop on PySpark and SparkSQL
+# PySpark and SparkSQL
 
 ## Setting Python Version 
 Change Python version for PySpark to Python 3.X (instead of default Python 2.7)
@@ -21,15 +21,15 @@ Spark has API bindings to Scala, Java, Python and R. The official documentation 
 The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.0/api/python/index.html
 
 ## Pros/Cons
-Advantages: Fast and can work with TB of data
+Advantages: Relatively fast and can work with TB of data  
 Disadvantages: Readability and Debugging Spark Messages is a pain
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a Jupyter Notebook. This command starts up the interactive shell for PySpark.   
-`pyspark --master yarn-client --queue default`
+`pyspark --master yarn --queue default`
 
 The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
-`sc` is a SparkContext and `sqlContext` is a HiveContext.
+`sc` is a SparkContext and `sqlContext` is as self-described,.
 
 You can check this by looking at the variable type.  
 ```python
@@ -45,17 +45,19 @@ The first thing you must do is create a `SparkContext` object. This tells Spark 
 If you were writing a script, this would be the equivalent lines to get you to the same starting point.
 ```python
 from pyspark import SparkContext, SparkConf
-from pyspark.sql import SQLContext, HiveContext
+from pyspark.sql import SQLContext, SparkSession
 
 conf = SparkConf()
 sc = SparkContext(conf=conf)
-sqlContext = HiveContext(sc)
+sqlContext = SQLContext(sc)
+
+spark = SparkSession.builder \
+     .master("local") \
+     .appName("Word Count") \
+     .config("spark.some.config.option", "some-value") \
+     .getOrCreate()
 ```
 **Note:** You can only have ONE SparkContext running at once
-
-## Set up SQLContext
-Let's create a SQLContext
-`sqlc = SQLContext(sc)`
 
 ## Data
 As with all data analysis, you can either:
@@ -97,7 +99,9 @@ sc.parallelize(range(100)).foreach(lambda x: counter.add(x))
 counter.value
 ```
 
-## Read in Different Filetypes
+# File I/O
+
+## Reading Files
 PySpark can create RDDs from any storage source supported by Hadoop. This includes text files. We'll work with text files and another format called parquet.
 
 ## JSON Line Files 
@@ -137,6 +141,38 @@ foldername = '41300'
 df = sqlContext.read.parquet(foldername)
 ```
 
+## Writing Files
+Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
+
+File formats available for saving the DataFrame are:
+1. csv (really any delimiter)
+2. json
+3. parquet w/ snappy
+4. ORC w/ snappy
+
+### CSV
+```
+trips.write.csv('alexander', sep=',', header=True)
+```
+The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default)
+
+The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
+
+```
+trips.write.mode('overwrite').json('alexander')
+trips.write.mode('overwrite').parquet('alexander')
+trips.write.mode('overwrite').orc('alexander')
+```
+
+### Single File Output
+You can use the `coalesce` method to return a new DataFrame that has exactly *N* partitions.
+```
+trips.coalesce(1).write.csv('alexander')
+```
+The result is still a folder called `alexander` but this time only with a single file (partition)
+
+**Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
+
 # Spark SQL
 Spark SQL is a Spark module for structured data processing.
 
@@ -173,17 +209,14 @@ To get the number of rows in the resulting DataFrame, use the `count` method.
 `records.count()`
 
 You can also query parquet files directly using SQL bypassing the need for a DataFrame.
-```
-ct = sqlContext.sql('SELECT COUNT(*) as Rows FROM parquet.`{}`'.format(foldername) )
-```
+`ct = sqlContext.sql('SELECT COUNT(*) as Rows FROM parquet.`{}`'.format(foldername) )`
 
 ## Spark DataFrames
 If you are familiar with pandas or R DataFrames, you can forget about SQL and just use the DataFrame equivalent methods.
+A DataFrame is equivalent to a relational table in Spark SQL
 
 ## Selecting Data
-```
-A = df.select('longitude','latitude','elevation')
-```
+`A = df.select('longitude','latitude','elevation')`
 **Note:** This is probably the easiest way to reorder existing columns but it creates a new DataFrame
 
 ## Renaming Columns
@@ -206,6 +239,10 @@ lonlat = df_filter.agg(max('Longitude'), min('Latitude') )
 lonlat.show()
 ```
 
+## Column Info
+To get a list of column of names, its the same as pandas. `df.columns`
+To get info about the schema of the DataFrame, `df.printSchema`
+
 ## Binning Data
 `splits` input datatype should match the `inputCol` datatype
 ```
@@ -216,9 +253,6 @@ binCol.show()
 buck.getSplits()
 ```
 **Note**: It doesn't assign the bin label but rather the bin index
-
-## Miscellaneous Methods
-There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
 ## Merging Data
 A = df.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation').persist()
@@ -232,6 +266,7 @@ newdf.show()
 ```
 
 ## Group By Method
+`df.groupBy(['RxDevice','FileId']).count()`
 
 ## Adding and Deleting Columns
 
@@ -256,6 +291,11 @@ samedf = newdf.drop('colname').show()
 samedf = newdf.drop(['colname','elevation']).show()
 ```
 
+## Converting to DateTime Format
+```
+from pyspark.sql.functions import from_unixtime
+df.select('Gentime', (from_unixtime(df["Gentime"] / 1000000).alias('Newtime')) )
+```
 
 ## Applying A Function to a Dataframe
 ```
@@ -273,74 +313,41 @@ S.show()
 `udf` stands for user defined function.
 
 ## Duplicates
-```
-dedupe = df.drop_duplicates(['RxDevice','FileId'])
-```
+`dedupe = df.drop_duplicates(['RxDevice','FileId'])`
 ## Reshaping Data
 No built-in method like `pd.melt`
 Check this stackoverflow answer for a homebrew solution https://stackoverflow.com/questions/41670103/pandas-melt-function-in-apache-spark
 
-## Converting to DateTime Format
-
-## Save DataFrame as a Persistent Table
-```
-df.write.option("path","myTable").saveAsTable("bsm2")
-```
-This will create a new folder in your HDFS called `myTable` with the files stored in snappy parquet format
-
-## Read in Persistent Table
-```
-df = sqlContext.read.parquet('myTable')
-```
 
 ## Crosstabs
-```
-df.crosstab('RxDevice','FileId').show()
-```
+`df.crosstab('RxDevice','FileId').show()`
 OutOfMemoryError: Java heap space
 
 ## Comparison
 SQL|DataFrame
 ---|---
 `SELECT COUNT(*) as Rows FROM Bsm`|`Rows = Bsm.count()`
-`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId`|
+`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId`| 
 `SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|
 `SELECT * FROM Bsm WHERE Latitude BETWEEN 42.0 and 42.5 AND Longitude BETWEEN -84.0 and -83.5`|
 
-
-----------------------------------------
-
-## Save DataFrame to File
-Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
-
-File formats available for saving the DataFrame are:
-1. csv (really any delimiter)
-2. json
-3. parquet w/ snappy
-4. ORC w/ snappy
-
-### CSV
+## Physical Plan
+You can use the `explain` method to look at the plan PySpark has made. Two different set of codes can result in the same plan.
+For example, we want to do something to every column in the DataFrame
+https://medium.com/@mrpowers/performing-operations-on-multiple-columns-in-a-pyspark-dataframe-36e97896c378
 ```
-trips.write.csv('alexander', sep=',', header=True)
+code1
 ```
-The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default)
+is equivalent to
+```
+code2
+```
+in terms of its plan.
 
-The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
+So the takeaway sometime, is to write the code version that is easier to read.
 
-```
-trips.write.mode('overwrite').json('alexander')
-trips.write.mode('overwrite').parquet('alexander')
-trips.write.mode('overwrite').orc('alexander')
-```
-
-### Single File
-You can use the `coalesce` method to return a new DataFrame that has exactly *N* partitions.
-```
-trips.coalesce(1).write.csv('alexander')
-```
-The result is still a folder called `alexander` but this time only with a single file (partition)
-
-**Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
+## Miscellaneous Methods
+There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
 ## Exit PySpark Interactive Shell
 Type `exit()` or press Ctrl-D
