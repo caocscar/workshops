@@ -98,6 +98,12 @@ acounter = sc.accumulator(counter)
 sc.parallelize(range(100)).foreach(lambda x: counter.add(x))
 counter.value
 ```
+# PySpark Cheat Sheets
+DataCamp has created a cheat sheet for PySpark DataFrames
+https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_SQL_Cheat_Sheet_Python.pdf
+
+They also have one for PySpark RDDs
+https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_Cheat_Sheet_Python.pdf
 
 # File I/O
 
@@ -154,7 +160,7 @@ File formats available for saving the DataFrame are:
 ```
 trips.write.csv('alexander', sep=',', header=True)
 ```
-The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default)
+The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `df.rdd.getNumPartitions()`.
 
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
 
@@ -240,8 +246,8 @@ lonlat.show()
 ```
 
 ## Column Info
-To get a list of column of names, its the same as pandas. `df.columns`
-To get info about the schema of the DataFrame, `df.printSchema`
+To get a list of column of names, `df.columns`, same as pandas
+To get info about the schema of the DataFrame, `df.printSchema()` of `df.dtypes` like in pandas
 
 ## Binning Data
 `splits` input datatype should match the `inputCol` datatype
@@ -314,6 +320,7 @@ S.show()
 
 ## Duplicates
 `dedupe = df.drop_duplicates(['RxDevice','FileId'])`
+
 ## Reshaping Data
 No built-in method like `pd.melt`
 Check this stackoverflow answer for a homebrew solution https://stackoverflow.com/questions/41670103/pandas-melt-function-in-apache-spark
