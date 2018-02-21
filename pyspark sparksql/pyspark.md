@@ -234,6 +234,8 @@ A2 = A.selectExpr("longitude as lon", "latitude as lat", "elevation")
 A3 = A.withColumnRenamed('longitude','lon') # one column at a time
 ```
 
+**Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab \t, and newline \n characters. Still getting same error after renaming it. Not sure why.
+
 ## Filtering Rows
 To filter rows based on a criteria use the `filter` method. `where` can also be used as it is an alias for `filter`.  
 `df_filter = df.filter('Longitude < -84').where('Latitude > 43')`
