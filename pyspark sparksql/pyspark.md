@@ -2,10 +2,7 @@
 
 ## Setting Python Version 
 Change Python version for PySpark to Python 3.X (instead of default Python 2.7)
-```
-export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0
-export PYSPARK_PYTHON=/sw/lsa/centos7/python-anaconda3/created-20170424/bin/python
-```
+`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 ## Documentation
 The latest Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
@@ -123,6 +120,22 @@ Read in text file into a RDD
 filename = 'TripStart_41300.txt'
 lines = sc.textFile(filename)
 ```
+This method is more powerful than that though. You can pass also pass it a:
+- directory `/alex/foldername`
+- use wildcards `/alex/data[0-7]*`
+- compressed files `alex.txt.gz`
+- comma-separated list of any of the above `/another/folder, /a/specific/file`
+
+They will automatically be stored into a single RDD 
+```
+folder = 'icpsr/9*'
+lines = sc.textFile(folder)
+columns = lines.map(lambda x: x.split(','))
+from pyspark.sql import Row
+table = columns.map(lambda x: Row(pid1=int(x[0]), pid2=int(x[1]), dist=float(x[2])) )
+df = sqlContext.createDataFrame(table)
+df.write.mode('overwrite').parquet('kristine')
+```
 Parse each row specifying delimiter
 
 `columns = lines.map(lambda x: x.split(','))`
@@ -141,7 +154,7 @@ bsm.show(5)
 **Note:** Columns are now in alphabetical order and not in order constructed. Analytically, column order makes no difference. Visually, sometimes it does.
 
 ### Parquet Files
-Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder. That's all I'm going to say about that.
+Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder.
 ```
 foldername = '41300'
 df = sqlContext.read.parquet(foldername)
