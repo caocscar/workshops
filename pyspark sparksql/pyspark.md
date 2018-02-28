@@ -1,8 +1,9 @@
 # PySpark and SparkSQL
 
 ## Setting Python Version 
-Change Python version for PySpark to Python 3.X (instead of default Python 2.7)
-`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
+Change Python version for PySpark to Python 3.X (instead of default Python 2.7)  
+For Python 3.5 `export PYSPARK_PYTHON=/sw/lsa/centos7/python-anaconda3/created-20170424/bin/python`  
+For Python 3.6 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 ## Documentation
 The latest Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
