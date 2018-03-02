@@ -201,10 +201,10 @@ The latest SQL programming guide can be found at https://spark.apache.org/docs/l
 You can perform SQL queries on Spark DataFrames after you register them as a table
 
 ### Set up a Temp Table
-```
-df.registerTempTable('Bsm')`
-sqlContext.registerDataFrameAsTable(df, "myTable")
-```
+`df.registerTempTable('Bsm')`
+OR
+`sqlContext.registerDataFrameAsTable(df, "Bsm")`
+
 ### SQL Queries
 Then you can start querying the table like a regular database.
 ```
