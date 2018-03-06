@@ -1,5 +1,13 @@
 # PySpark and SparkSQL
 
+## Apache Spark Ecosystem
+- **SparkSQL + DataFrames**
+- Spark Streaming
+- MLlib (Machine Learning)
+- GraphX (Network Analysis)  
+
+https://databricks.com/spark/about
+
 ## Setting Python Version 
 Change Python version for PySpark to Python 3.X (instead of default Python 2.7)  
 For Python 3.5 `export PYSPARK_PYTHON=/sw/lsa/centos7/python-anaconda3/created-20170424/bin/python`  
@@ -27,7 +35,7 @@ The interactive shell is analogous to a Jupyter Notebook. This command starts up
 `pyspark --master yarn --queue default`
 
 The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
-`sc` is a SparkContext and `sqlContext` is as self-described,.
+`sc` is a SparkContext and `sqlContext` is as self-described. Making your own SparkContext will not work. 
 
 You can check this by looking at the variable type.  
 ```python
@@ -61,7 +69,7 @@ spark = SparkSession.builder \
 As with all data analysis, you can either:
 1. Create data from scratch
 2. Read it in from an external data source
-The goal is to get it into a RDD and eventually a DataFrame
+Our goal is to get it into a RDD and eventually a DataFrame
 
 ## Parallelized Collections
 ```python
