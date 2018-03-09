@@ -7,6 +7,7 @@ This is a list of some CSCAR Workshops contained in this repository.
 - Introduction to Matlab
 - Introduction to Python
 - Introduction to SQL
+- Network Analysis with igraph
 - Extracting Data from PDFs
 - PySpark and SparkSQL
 - Working with Geographical Data and Parallel Computing on Flux
