@@ -1,5 +1,7 @@
 # Intro to Pandas Workshop
 
-I've not included the data files with the notebook because they are too large in size.
+This workshop introduces the user to the world of `pandas` and includes common data wrangling methods.
 
-TODO: Find a better dataset to use in examples
+## External Files
+
+I've excluded them because the data files are large. [TODO] Include smaller version of files.
