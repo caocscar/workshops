@@ -145,7 +145,7 @@ Parse each row specifying delimiter
 Create a RDD of `Row` objects
 ```
 from pyspark.sql import Row
-table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), TxDevice=int(x[2]), Gentime=int(x[3]), Latitude=float(x[4]),      Longitude=float(x[5]), Elevation=float(x[6]), Speed=float(x[7]), Heading=float(x[8]), Yawrate=float(x[9])) )
+table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), TxDevice=int(x[2]), Gentime=int(x[3]), Latitude=float(x[7]),      Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
 ```
 Create a DataFrame from RDD of `Row` objects and view
 ```
@@ -154,6 +154,13 @@ bsm
 bsm.show(5)
 ```
 **Note:** Columns are now in alphabetical order and not in order constructed. Theoretically, column order makes no difference. Practically and visually, sometimes it does.
+
+To reorder columns, you actually have to create a new dataframe using the `select` method.
+```
+columns = ['RxDevice','FileId','TxDevice','Gentime','Longitude','Latitude','Elevation','Speed','Heading','Yawrate']
+BSM = bsm.select(columns)
+BSM.show(5)
+```
 
 ### Parquet Files
 Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder.
@@ -173,26 +180,32 @@ File formats available for saving the DataFrame are:
 
 ### CSV
 ```
-trips.write.csv('alexander', sep=',', header=True)
+BSM.write.csv('alexander', sep=',', header=True)
 ```
-The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `df.rdd.getNumPartitions()`.
+The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `rdd.getNumPartitions()`.
 
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
 
 ```
-trips.write.mode('overwrite').json('alexander')
-trips.write.mode('overwrite').parquet('alexander')
-trips.write.mode('overwrite').orc('alexander')
+BSM.write.mode('overwrite').json('alexander')
+BSM.write.mode('overwrite').parquet('alexander')
+BSM.write.mode('overwrite').orc('alexander')
 ```
+
+**Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
 
 ### Single File Output
 You can use the `coalesce` method to return a new DataFrame that has exactly *N* partitions.
 ```
-trips.coalesce(1).write.csv('alexander')
+BSM.coalesce(1).write.csv('alexander')
 ```
 The result is still a folder called `alexander` but this time only with a single file (partition)
 
-**Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
+### `coalesce` vs `repartition`
+There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can be increased/decreased, but with `coalesce` the number of partitions can only be decreased. `coalesce` is better than `repartition` since it avoids a **full shuffle** of the data. `coalesce` moves data off the extra nodes onto the nodes we keep.
+```
+df = BSM.repartition(3)
+```
 
 # Spark SQL
 Spark SQL is a Spark module for structured data processing.
@@ -224,7 +237,6 @@ trips.show()
 driver_trips.show()
 area.show()
 ```
-NOTE: Maybe Move Persistence HERE
 
 To get the number of rows in the resulting DataFrame, use the `count` method.
 `records.count()`
@@ -234,7 +246,7 @@ You can also query parquet files directly using SQL bypassing the need for a Dat
 
 ## Spark DataFrames
 If you are familiar with pandas or R DataFrames, you can forget about SQL and just use the DataFrame equivalent methods.
-A DataFrame is equivalent to a relational table in Spark SQL
+A DataFrame is equivalent to a relational table in Spark SQL.
 
 ## Selecting Data
 `A = df.select('longitude','latitude','elevation')`
@@ -263,23 +275,12 @@ lonlat.show()
 ```
 
 ## Column Info
-To get a list of column of names, `df.columns`, same as pandas
+To get a list of column names use `df.columns` (same as pandas)
 To get info about the schema of the DataFrame, `df.printSchema()` of `df.dtypes` like in pandas
 
-## Binning Data
-`splits` input datatype should match the `inputCol` datatype
-```
-from pyspark.ml.feature import Bucketizer
-buck = Bucketizer(splits=[-90.0, 40.0, 42.0, 44.0, 46.0, 90.0], inputCol='Latitude', outputCol='bins')
-binCol = buck.transform(df)
-binCol.show()
-buck.getSplits()
-```
-**Note**: It doesn't assign the bin label but rather the bin index
-
 ## Merging Data
-A = df.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation').persist()
-B = df.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed').persist()
+A = BSM.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation').persist()
+B = BSM.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed').persist()
 C = A.join(B, on=['RxDevice','FileId','Gentime'], how='inner')
 
 ## Replacing Values
@@ -369,6 +370,17 @@ code2
 in terms of its plan.
 
 So the takeaway sometime, is to write the code version that is easier to read.
+
+## Binning Data
+`splits` input datatype should match the `inputCol` datatype
+```
+from pyspark.ml.feature import Bucketizer
+buck = Bucketizer(splits=[-90.0, 40.0, 42.0, 44.0, 46.0, 90.0], inputCol='Latitude', outputCol='bins')
+binCol = buck.transform(df)
+binCol.show()
+buck.getSplits()
+```
+**Note**: It doesn't assign the bin label but rather the bin index
 
 ## Miscellaneous Methods
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
