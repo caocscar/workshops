@@ -238,10 +238,10 @@ driver_trips.show()
 area.show()
 ```
 
-To get the number of rows in the resulting DataFrame, use the `count` method.
+To get the number of rows in the resulting DataFrame, use the `count` method.  
 `records.count()`
 
-You can also query parquet files directly using SQL bypassing the need for a DataFrame.
+You can also query parquet files directly using SQL bypassing the need for a DataFrame.  
 `ct = sqlContext.sql('SELECT COUNT(*) as Rows FROM parquet.`{}`'.format(foldername) )`
 
 ## Spark DataFrames
@@ -275,12 +275,12 @@ lonlat.show()
 ```
 
 ## Column Info
-To get a list of column names use `df.columns` (same as pandas)
+To get a list of column names use `df.columns` (same as pandas).  
 To get info about the schema of the DataFrame, `df.printSchema()` of `df.dtypes` like in pandas
 
 ## Merging Data
-A = BSM.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation').persist()
-B = BSM.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed').persist()
+A = BSM.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation').persist()  
+B = BSM.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed').persist()  
 C = A.join(B, on=['RxDevice','FileId','Gentime'], how='inner')
 
 ## Replacing Values
@@ -342,7 +342,6 @@ S.show()
 ## Reshaping Data
 No built-in method like `pd.melt`
 Check this stackoverflow answer for a homebrew solution https://stackoverflow.com/questions/41670103/pandas-melt-function-in-apache-spark
-
 
 ## Crosstabs
 `df.crosstab('RxDevice','FileId').show()`
