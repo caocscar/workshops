@@ -69,6 +69,7 @@ spark = SparkSession.builder \
 As with all data analysis, you can either:
 1. Create data from scratch
 2. Read it in from an external data source
+
 Our goal is to get it into a RDD and eventually a DataFrame
 
 ## Parallelized Collections
@@ -126,7 +127,7 @@ df = spark.read.json(filepath)
 ## Text Files
 Read in text file into a RDD
 ```
-filename = 'TripStart_41300.txt'
+filename = 'bsm.txt'
 lines = sc.textFile(filename)
 ```
 This method is more powerful than that though. You can pass also pass it a:
@@ -136,15 +137,7 @@ This method is more powerful than that though. You can pass also pass it a:
 - comma-separated list of any of the above `/another/folder, /a/specific/file`
 
 They will automatically be stored into a single RDD 
-```
-folder = 'icpsr/9*'
-lines = sc.textFile(folder)
-columns = lines.map(lambda x: x.split(','))
-from pyspark.sql import Row
-table = columns.map(lambda x: Row(pid1=int(x[0]), pid2=int(x[1]), dist=float(x[2])) )
-df = sqlContext.createDataFrame(table)
-df.write.mode('overwrite').parquet('kristine')
-```
+
 Parse each row specifying delimiter
 
 `columns = lines.map(lambda x: x.split(','))`
@@ -160,7 +153,7 @@ bsm = sqlContext.createDataFrame(table)
 bsm
 bsm.show(5)
 ```
-**Note:** Columns are now in alphabetical order and not in order constructed. Analytically, column order makes no difference. Visually, sometimes it does.
+**Note:** Columns are now in alphabetical order and not in order constructed. Theoretically, column order makes no difference. Practically and visually, sometimes it does.
 
 ### Parquet Files
 Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder.
@@ -383,6 +376,13 @@ There are a lot of methods available. A list of them are here http://spark.apach
 ## Exit PySpark Interactive Shell
 Type `exit()` or press Ctrl-D
 
-
-
+```
+folder = 'icpsr/9*'
+lines = sc.textFile(folder)
+columns = lines.map(lambda x: x.split(','))
+from pyspark.sql import Row
+table = columns.map(lambda x: Row(pid1=int(x[0]), pid2=int(x[1]), dist=float(x[2])) )
+df = sqlContext.createDataFrame(table)
+df.write.mode('overwrite').parquet('kristine')
+```
 
