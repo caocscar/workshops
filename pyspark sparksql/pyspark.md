@@ -28,7 +28,7 @@ The Spark Python API documentation can be found at https://spark.apache.org/docs
 
 ## Pros/Cons
 Advantages: Relatively fast and can work with TB of data  
-Disadvantages: Readability and Debugging Spark Messages is a pain
+Disadvantages: Readability and debugging spark messages is a pain
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a Jupyter Notebook. This command starts up the interactive shell for PySpark.   
