@@ -138,7 +138,7 @@ Parse each row specifying delimiter
 Create a RDD of `Row` objects
 ```
 from pyspark.sql import Row
-table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), TxDevice=int(x[2]), Gentime=int(x[3]), Latitude=float(x[7]),      Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
+table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]),      Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
 ```
 Create a DataFrame from RDD of `Row` objects and view
 ```
@@ -150,7 +150,7 @@ bsm.show(5)
 
 To reorder columns, you actually have to create a new dataframe using the `select` method.
 ```
-columns = ['RxDevice','FileId','TxDevice','Gentime','Longitude','Latitude','Elevation','Speed','Heading','Yawrate']
+columns = ['RxDevice','FileId','Gentime','Longitude','Latitude','Elevation','Speed','Heading','Yawrate']
 BSM = bsm.select(columns)
 BSM.show(5)
 ```
@@ -196,10 +196,10 @@ You can use the `coalesce` method to return a new DataFrame that has exactly *N*
 N = 20
 BSM.coalesce(N).write.mode('overwrite').parquet('alexander')
 ```
-The result is still a folder called `alexander` but this time with *N* files.
+The result is still a folder called *alexander* but this time with *N* files.
 
 ### `coalesce` vs `repartition`
-There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can be increased/decreased, but with `coalesce` the number of partitions can only be decreased. `coalesce` is better than `repartition` since it avoids a **full shuffle** of the data. `coalesce` moves data off the extra nodes onto the nodes we keep.
+There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can be increased/decreased, but with `coalesce` the number of partitions can only be decreased. `coalesce` is better than `repartition` since it avoids a **full shuffle** of the data. `coalesce` moves data off the extra nodes onto the kept nodes.
 ```
 df = BSM.repartition(3)
 ```
@@ -255,7 +255,7 @@ A2 = A.selectExpr("longitude as lon", "latitude as lat", "elevation")
 A3 = A.withColumnRenamed('longitude','lon') # one column at a time
 ```
 
-**Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab \t, and newline \n characters. Still getting same error after renaming it. Not sure why.
+**Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab \t, and newline \n characters. You might still get same error after renaming it. Not sure why. Better to take care of it before uploading data file.
 
 ## Filtering Rows
 To filter rows based on a criteria use the `filter` method. `where` can also be used as it is an alias for `filter`.  
@@ -278,8 +278,9 @@ B = BSM.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed').persis
 C = A.join(B, on=['RxDevice','FileId','Gentime'], how='inner')
 
 ## Replacing Values
+Suppose you want to replace the number 10 with the value 3.
 ```
-newdf = df.replace(10, 3, ['RxDevice','TxDevice'])
+newdf = df.replace(10, 3, ['RxDevice'])
 newdf.show()
 ```
 
@@ -380,14 +381,4 @@ There are a lot of methods available. A list of them are here http://spark.apach
 
 ## Exit PySpark Interactive Shell
 Type `exit()` or press Ctrl-D
-
-```
-folder = 'icpsr/9*'
-lines = sc.textFile(folder)
-columns = lines.map(lambda x: x.split(','))
-from pyspark.sql import Row
-table = columns.map(lambda x: Row(pid1=int(x[0]), pid2=int(x[1]), dist=float(x[2])) )
-df = sqlContext.createDataFrame(table)
-df.write.mode('overwrite').parquet('kristine')
-```
 
