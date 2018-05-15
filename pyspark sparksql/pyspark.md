@@ -115,14 +115,7 @@ https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_Cheat_Sheet_Pyt
 # File I/O
 
 ## Reading Files
-PySpark can create RDDs from any storage source supported by Hadoop. This includes text files. We'll work with text files and another format called parquet.
-
-## JSON Line Files 
-The JSON Lines (also called newline-delimited JSON) format is where each line contains a valid JSON object. 
-```
-filepath = '/var/reddit/RC_2007-07'
-df = spark.read.json(filepath)
-```
+PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called parquet.
 
 ## Text Files
 Read in text file into a RDD
@@ -194,12 +187,16 @@ BSM.write.mode('overwrite').orc('alexander')
 
 **Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
 
-### Single File Output
+### Reducing Partitions
+Recall that you can retrieve the number of partitions with the method  
+`BSM.rdd.getNumPartitions()`
+
 You can use the `coalesce` method to return a new DataFrame that has exactly *N* partitions.
 ```
-BSM.coalesce(1).write.csv('alexander')
+N = 20
+BSM.coalesce(N).write.mode('overwrite').parquet('alexander')
 ```
-The result is still a folder called `alexander` but this time only with a single file (partition)
+The result is still a folder called `alexander` but this time with *N* files.
 
 ### `coalesce` vs `repartition`
 There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can be increased/decreased, but with `coalesce` the number of partitions can only be decreased. `coalesce` is better than `repartition` since it avoids a **full shuffle** of the data. `coalesce` moves data off the extra nodes onto the nodes we keep.
@@ -241,15 +238,12 @@ area.show()
 To get the number of rows in the resulting DataFrame, use the `count` method.  
 `records.count()`
 
-You can also query parquet files directly using SQL bypassing the need for a DataFrame.  
-`ct = sqlContext.sql('SELECT COUNT(*) as Rows FROM parquet.`{}`'.format(foldername) )`
-
 ## Spark DataFrames
 If you are familiar with pandas or R DataFrames, you can forget about SQL and just use the DataFrame equivalent methods.
 A DataFrame is equivalent to a relational table in Spark SQL.
 
 ## Selecting Data
-`A = df.select('longitude','latitude','elevation')`
+`A = df.select('longitude','latitude','elevation')`  
 **Note:** This is probably the easiest way to reorder existing columns but it creates a new DataFrame
 
 ## Renaming Columns
