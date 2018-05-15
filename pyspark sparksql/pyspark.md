@@ -238,7 +238,7 @@ area.show()
 To get the number of rows in the resulting DataFrame, use the `count` method.  
 `records.count()`
 
-## Spark DataFrames
+# Spark DataFrames
 If you are familiar with pandas or R DataFrames, you can forget about SQL and just use the DataFrame equivalent methods.
 A DataFrame is equivalent to a relational table in Spark SQL.
 
