@@ -1,22 +1,23 @@
 # CSCAR Workshops
 This is a list of some CSCAR Workshops contained in this repository.
-- Pandas
-- GeoPandas
-- Geospatial Analysis with Python
-- Google Fusion Tables
-- Regular Expressions
 - Introduction to Matlab
 - Introduction to Python
+- Pandas
 - Introduction to SQL
 - SQLite
+- Regular Expressions
+- Natural Language Processing with Python
 - Network Analysis with igraph
-- Extracting Data from PDFs
 - PySpark and SparkSQL
+- GeoPandas
+- Geospatial Analysis with Python
 - Working with Geographical Data and Parallel Computing on Flux
 - Thematic Maps with Python
 - Datashader
+- Google Fusion Tables
 - Web Scraping with Python
   - HTML
   - Google APIs 
   - YouTube API
   - Twitter APIs
+- Extracting Data from PDFs
