@@ -1,5 +1,34 @@
 # PySpark and SparkSQL
 
+## Table of Contents
+- [Apache Spark Ecosystem](#apache-spark-ecosystem)
+- [Setting Python Version](#setting-python-version)
+- [PySpark Interactive Shell](#pyspark-interactive-shell)
+     - [Exit Shell](#exit-interactive-shell)
+- [PySpark Cheat Sheets](#pyspark-cheat-sheets)
+- [File I/O](#file-io)
+     - [Reading Files](#reading-files)
+     - [Writing Files](#writing-files)
+- [Spark SQL](#spark-sql)
+     - [Set up a Temp Table](#set-up-a-temp-table)
+     - [SQL Queries](#sql-queries)
+ - [Spark DataFrames](#spark-dataframes)   
+     - [Selecting Data](#selecting-data)
+     - [Renaming Columns](#renaming-columns)
+     - [Filtering Rows](#filtering-rows)
+     - [Column Info](#column-info)
+     - [Merging Data](#merging-data)
+     - [Replacing Values](#replacing-values)
+     - [Grouo By Method](#group-by-method)
+     - [Adding Columns](#adding-columns)
+     - [Deleting Columns](#deleting-columns)
+     - [Converting to Datetime Format](#converting-to-datetime-format)
+     - [Applying a Function to a DataFrame](#applying-a-function-to-a-dataframe)
+     - [Duplicates](#duplicates)
+- [Physical Plan](#physical-plan)
+- [Miscellaneous Methods](#miscellaneous-methods)
+    
+
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
 - Spark Streaming
@@ -31,9 +60,11 @@ Advantages: Relatively fast and can work with TB of data
 Disadvantages: Readability and debugging spark messages is a pain
 
 # PySpark Interactive Shell
-The interactive shell is analogous to a Jupyter Notebook. This command starts up the interactive shell for PySpark.   
-`pyspark --master yarn --queue default`
-
+The interactive shell is analogous to a Jupyter Notebook. This command starts up the interactive shell for PySpark. The first example line of code starts the shell with the default settings. The second example line starts the shell with custom settings.
+```
+pyspark --master yarn --queue workshop    
+pyspark --master yarn --queue workshop --num-executors 20 --executor-memory 5g --executor-cores 4
+```
 The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
 `sc` is a SparkContext and `sqlContext` is as self-described. Making your own SparkContext will not work. 
 
@@ -42,6 +73,10 @@ You can check this by looking at the variable type.
 type(sc)
 type(sqlContext)
 ```
+
+## Exit Interactive Shell
+Type `exit()` or press Ctrl-D
+
 
 ## Initializing Spark
 The first thing you must do is create a `SparkContext` object. This tells Spark how to access a cluster.
@@ -112,7 +147,7 @@ https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_SQL_Cheat_Sheet
 They also have one for PySpark RDDs
 https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_Cheat_Sheet_Python.pdf
 
-# File I/O
+# File IO
 
 ## Reading Files
 PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called parquet.
@@ -287,9 +322,7 @@ newdf.show()
 ## Group By Method
 `df.groupBy(['RxDevice','FileId']).count()`
 
-## Adding and Deleting Columns
-
-### Adding
+## Adding Columns
 To initialize with a constant
 ```
 from pyspark.sql import functions as fct
@@ -303,7 +336,7 @@ newdf = df.withColumn('colname', df['Latitude'] - 42)
 newdf.show()
 ```
 
-### Deleting
+## Deleting Columns
 To drop a column, use the `drop` method.  
 ```
 samedf = newdf.drop('colname').show()
@@ -333,14 +366,6 @@ S.show()
 
 ## Duplicates
 `dedupe = df.drop_duplicates(['RxDevice','FileId'])`
-
-## Reshaping Data
-No built-in method like `pd.melt`
-Check this stackoverflow answer for a homebrew solution https://stackoverflow.com/questions/41670103/pandas-melt-function-in-apache-spark
-
-## Crosstabs
-`df.crosstab('RxDevice','FileId').show()`
-OutOfMemoryError: Java heap space
 
 ## Comparison
 SQL|DataFrame
@@ -379,6 +404,4 @@ buck.getSplits()
 ## Miscellaneous Methods
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
-## Exit PySpark Interactive Shell
-Type `exit()` or press Ctrl-D
 
