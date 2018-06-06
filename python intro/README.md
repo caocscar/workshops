@@ -1,6 +1,6 @@
 # Introduction to Python
 
-There are no notes for this workshop. I just do it off the top of my head using a project-based learning approach.
+There are no notes for this workshop. I do it freestyle using a project-based learning approach.
 
 Exercises  
 https://goo.gl/bw1J9L
@@ -21,13 +21,15 @@ https://wiki.python.org/moin/BeginnersGuide/NonProgrammers
 #### Python Functions
 ```
 input
-with
-open
-print
-range
+type
+from import
 random
+range
+print
 len
 zip
+id
+time
 ```
 
 #### Data Types
@@ -59,7 +61,10 @@ readlines
 ```
 
 #### Miscelleaneous
-how to write a function
-integer division
-shallow vs deep copy
-banker's rounding
+comments  
+list comprehension  
+casting variables  
+how to write a function  
+integer division  
+reference vs. copying variables  
+banker's rounding  
