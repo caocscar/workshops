@@ -1,5 +1,36 @@
 # PySpark and SparkSQL
 
+## Table of Contents
+- [Apache Spark Ecosystem](#apache-spark-ecosystem)
+- [Setting Python Version](#setting-python-version)
+- [PySpark Interactive Shell](#pyspark-interactive-shell)
+     - [Exit Shell](#exit-interactive-shell)
+- [PySpark Cheat Sheets](#pyspark-cheat-sheets)
+- [File I/O](#file-io)
+     - [Reading Files](#reading-files)
+     - [Writing Files](#writing-files)
+- [Spark SQL](#spark-sql)
+     - [Set up a Temp Table](#set-up-a-temp-table)
+     - [SQL Queries](#sql-queries)
+ - [Spark DataFrames](#spark-dataframes)   
+     - [Selecting Data](#selecting-data)
+     - [Renaming Columns](#renaming-columns)
+     - [Filtering Rows](#filtering-rows)
+     - [Descriptive Statistics](#descriptive-statistics)
+     - [Column Info](#column-info)
+     - [Merging Data](#merging-data)
+     - [Replacing Values](#replacing-values)
+     - [Group By Method](#group-by-method)
+     - [Adding Columns](#adding-columns)
+     - [Deleting Columns](#deleting-columns)
+     - [Converting to Datetime Format](#converting-to-datetime-format)
+     - [Applying a Function to a DataFrame](#applying-a-function-to-a-dataframe)
+     - [Dropping Duplicates](#dropping-duplicates)
+- [SQL vs DataFrame Comparison](#comparison)
+- [Physical Plan](#physical-plan)
+- [Miscellaneous Methods](#miscellaneous-methods)
+    
+
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
 - Spark Streaming
@@ -31,9 +62,11 @@ Advantages: Relatively fast and can work with TB of data
 Disadvantages: Readability and debugging spark messages is a pain
 
 # PySpark Interactive Shell
-The interactive shell is analogous to a Jupyter Notebook. This command starts up the interactive shell for PySpark.   
-`pyspark --master yarn --queue default`
-
+The interactive shell is analogous to a Jupyter Notebook. This command starts up the interactive shell for PySpark. The first example line of code starts the shell with the default settings. The second example line starts the shell with custom settings.
+```
+pyspark --master yarn --queue workshop    
+pyspark --master yarn --queue workshop --num-executors 20 --executor-memory 5g --executor-cores 4
+```
 The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
 `sc` is a SparkContext and `sqlContext` is as self-described. Making your own SparkContext will not work. 
 
@@ -42,6 +75,10 @@ You can check this by looking at the variable type.
 type(sc)
 type(sqlContext)
 ```
+
+## Exit Interactive Shell
+Type `exit()` or press Ctrl-D
+
 
 ## Initializing Spark
 The first thing you must do is create a `SparkContext` object. This tells Spark how to access a cluster.
@@ -112,7 +149,7 @@ https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_SQL_Cheat_Sheet
 They also have one for PySpark RDDs
 https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_Cheat_Sheet_Python.pdf
 
-# File I/O
+# File IO
 
 ## Reading Files
 PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called parquet.
@@ -243,112 +280,120 @@ If you are familiar with pandas or R DataFrames, you can forget about SQL and ju
 A DataFrame is equivalent to a relational table in Spark SQL.
 
 ## Selecting Data
-`A = df.select('longitude','latitude','elevation')`  
-**Note:** This is probably the easiest way to reorder existing columns but it creates a new DataFrame
+`subset = df.select('longitude','latitude','elevation')`  
+**Note:** For some reason, column names are not case sensitive
 
 ## Renaming Columns
 There are multiple ways to rename columns. Here are three ways using the `alias`, `selectExpr`, `withColumnRenamed` methods.
 ```
 from pyspark.sql.functions import *
-A1 = A.select(col('longitude').alias('lon'), col('latitude').alias('lat'), 'elevation' )
-A2 = A.selectExpr("longitude as lon", "latitude as lat", "elevation")
-A3 = A.withColumnRenamed('longitude','lon') # one column at a time
+rename1 = subset.select(col('Longitude').alias('lon'), col('Latitude').alias('lat'), 'elevation' )
+rename2 = subset.selectExpr('longitude as lon', 'latitude as lat', 'elevation')
+rename3 = subset.withColumnRenamed('Longitude','lon').withColumnRenamed('latitude','lat')
 ```
 
 **Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab \t, and newline \n characters. You might still get same error after renaming it. Not sure why. Better to take care of it before uploading data file.
 
 ## Filtering Rows
 To filter rows based on a criteria use the `filter` method. `where` can also be used as it is an alias for `filter`.  
-`df_filter = df.filter('Longitude < -84').where('Latitude > 43')`
+`filter = df.filter('Longitude < -84').where('Latitude > 43')`
 
+## Descriptive Statistics
 To check if the DataFrame is correct, we can use the `agg` method along with the `min`,`max` functions.
 ```
-df_filter.describe(['Longitude','Latitude']).show()
+summary = df_filter.describe(['Longitude','Latitude'])
+summary.show()
 lonlat = df_filter.agg(max('Longitude'), min('Latitude') )
 lonlat.show()
 ```
 
 ## Column Info
 To get a list of column names use `df.columns` (same as pandas).  
-To get info about the schema of the DataFrame, `df.printSchema()` of `df.dtypes` like in pandas
+To get info about the schema of the DataFrame, `df.printSchema()` or `df.dtypes` like in pandas or just `df`
 
 ## Merging Data
-A = BSM.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation').persist()  
-B = BSM.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed').persist()  
-C = A.join(B, on=['RxDevice','FileId','Gentime'], how='inner')
+Left = df.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed')
+Right = df.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation')
+Merge = Left.join(Right, on=['RxDevice','FileId','Gentime'], how='inner')
 
 ## Replacing Values
 Suppose you want to replace the number 10 with the value 3.
 ```
-newdf = df.replace(10, 3, ['RxDevice'])
-newdf.show()
+newvalues = df.replace(10, 3, ['RxDevice']).replace(922233, 99, 'FileId')
+newvalues.show()
 ```
 
 ## Group By Method
-`df.groupBy(['RxDevice','FileId']).count()`
+Similar to `pandas` groupby by method
+```
+counts = df.groupBy(['RxDevice','FileId']).count()
+counts.show()
+```
+**Note**: If we try to do another `show` command, it will recompute the counts dataframe. This is where the `persist` method would come in handy.
 
-## Adding and Deleting Columns
-
-### Adding
+## Adding Columns
 To initialize with a constant
 ```
 from pyspark.sql import functions as fct
-newdf = df.withColumn('colname', fct.lit(7) )
+newdf = df.withColumn('newcol', fct.lit(7) )
 newdf.show()
 ```
 
 To calculate a new column based on another one
 ```
-newdf = df.withColumn('colname', df['Latitude'] - 42)
+newdf = newdf.withColumn('colname', df['Latitude'] - 42)
 newdf.show()
 ```
 
-### Deleting
+## Deleting Columns
 To drop a column, use the `drop` method.  
 ```
-samedf = newdf.drop('colname').show()
-samedf = newdf.drop(['colname','elevation']).show()
+smalldf = newdf.drop('colname')
+smalldf.show()
+```
+To drop multiple columns, you can use the `*iterator` idiom with an iterator (e.g. list). 
+```
+columns2delete = ['newcol','colname','elevation']
+smallerdf = newdf.drop(*columns2delete)
+smallerdf.show()
 ```
 
 ## Converting to DateTime Format
+`Gentime` is in units of microseconds so we divide by a million to convert to seconds. The epoch for `Gentime` is in 2004 instead of 1970 so we add the necessary seconds to account for this.
 ```
 from pyspark.sql.functions import from_unixtime
-df.select('Gentime', (from_unixtime(df["Gentime"] / 1000000).alias('Newtime')) )
+timedf = df.select('Gentime', (from_unixtime(df['Gentime'] / 1000000 + 1072929024).alias('DateTime')) )
 ```
 
 ## Applying A Function to a Dataframe
+Define a function that returns the length of the column value. 
 ```
 from pyspark.sql.types import IntegerType
 from pyspark.sql.functions import udf
 
 f1 = udf(lambda x: len(str(x)), IntegerType()) # if the function returns an int
 # Using the knowledge we've gained so far, 
-newdf = df.withColumn("newColumn", f1("Speed"))
+newdf = df.withColumn('lengthYawrate', f1('Yawrate') )
 newdf.show()
 # Alternatively
-S = df.select('Speed', f1("Speed").alias("newCol"))
-S.show()
+newdf = df.select('Yawrate', f1("Yawrate").alias("lengthYaw"))
+newdf.show()
 ```
 `udf` stands for user defined function.
 
-## Duplicates
-`dedupe = df.drop_duplicates(['RxDevice','FileId'])`
-
-## Reshaping Data
-No built-in method like `pd.melt`
-Check this stackoverflow answer for a homebrew solution https://stackoverflow.com/questions/41670103/pandas-melt-function-in-apache-spark
-
-## Crosstabs
-`df.crosstab('RxDevice','FileId').show()`
-OutOfMemoryError: Java heap space
+## Dropping Duplicates
+The syntax is the same as for `pandas`.
+```
+dedupe = df.drop_duplicates(['RxDevice','FileId'])
+```
 
 ## Comparison
 SQL|DataFrame
 ---|---
-`SELECT COUNT(*) as Rows FROM Bsm`|`Rows = Bsm.count()`
-`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId`| 
-`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|
-`SELECT * FROM Bsm WHERE Latitude BETWEEN 42.0 and 42.5 AND Longitude BETWEEN -84.0 and -83.5`|
+`SELECT COUNT(*) as Rows FROM Bsm`|`Rows = df.count()`
+`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.drop_duplicates(['RxDevice','FileId']).orderBy(['RxDevice','FileId'], ascending=[True,False])`
+`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.groupby('RxDevice').where('Trips > 10')`
+`SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Yawrate > 10').filter('Speed <= 50')`
 
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Two different set of codes can result in the same plan.
@@ -379,6 +424,4 @@ buck.getSplits()
 ## Miscellaneous Methods
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
-## Exit PySpark Interactive Shell
-Type `exit()` or press Ctrl-D
 
