@@ -41,7 +41,6 @@ https://databricks.com/spark/about
 
 ## Setting Python Version 
 Change Python version for PySpark to Python 3.X (instead of default Python 2.7)  
-For Python 3.5 `export PYSPARK_PYTHON=/sw/lsa/centos7/python-anaconda3/created-20170424/bin/python`  
 For Python 3.6 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 ## Documentation
@@ -379,7 +378,7 @@ newdf.show()
 newdf = df.select('Yawrate', f1("Yawrate").alias("lengthYaw"))
 newdf.show()
 ```
-`udf` stands for user defined function.
+**Note**: `udf` stands for user defined function.
 
 ## Dropping Duplicates
 The syntax is the same as for `pandas`.
@@ -393,7 +392,7 @@ SQL|DataFrame
 `SELECT COUNT(*) as Rows FROM Bsm`|`Rows = df.count()`
 `SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.drop_duplicates(['RxDevice','FileId']).orderBy(['RxDevice','FileId'], ascending=[True,False])`
 `SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.groupby('RxDevice').where('Trips > 10')`
-`SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Yawrate > 10').filter('Speed <= 50')`
+`SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').filter('Yawrate > 10')`
 
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Two different set of codes can result in the same plan.
