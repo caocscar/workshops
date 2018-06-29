@@ -104,15 +104,15 @@ Read in text file into a RDD
 filename = 'bsm.txt'
 lines = sc.textFile(filename)
 ```
-This method is more powerful than that though. You can pass also pass it a:
-- directory `/alex/foldername`
-- use wildcards `/alex/data[0-7]*`
+This method is more powerful than that though. You can also use:
+- a directory `/alex/foldername`
+- wildcards `/alex/data[0-7]*`
 - compressed files `alex.txt.gz`
 - comma-separated list of any of the above `/another/folder, /a/specific/file`
 
-They will automatically be stored into a single RDD 
+They will automatically be stored into a single RDD.
 
-Parse each row specifying delimiter
+Next, parse each row specifying delimiter
 
 `columns = lines.map(lambda x: x.split(','))`
 
@@ -127,7 +127,7 @@ bsm = sqlContext.createDataFrame(table)
 bsm
 bsm.show(5)
 ```
-**Note:** Columns are now in alphabetical order and not in order constructed. Theoretically, column order makes no difference. Practically and visually, sometimes it does.
+**Note:** Columns are now in alphabetical order and not in order constructed.
 
 To reorder columns, you actually have to create a new dataframe using the `select` method.
 ```
@@ -159,13 +159,11 @@ BSM.write.csv('alexander', sep=',', header=True)
 The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `rdd.getNumPartitions()`.
 
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
-
 ```
 BSM.write.mode('overwrite').json('alexander')
 BSM.write.mode('overwrite').parquet('alexander')
 BSM.write.mode('overwrite').orc('alexander')
 ```
-
 **Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
 
 ### Reducing Partitions
@@ -188,9 +186,9 @@ df = BSM.repartition(3)
 # Spark SQL
 Spark SQL is a Spark module for structured data processing.
 
-The latest SQL programming guide can be found at https://spark.apache.org/docs/latest/sql-programming-guide.html
+The latest SQL programming guide can be found at https://spark.apache.org/docs/latest/sql-programming-guide.html.
 
-You can perform SQL queries on Spark DataFrames after you register them as a table
+You can perform SQL queries on Spark DataFrames after you register them as a table.
 
 ### Set up a Temp Table
 `df.registerTempTable('Bsm')`
