@@ -101,7 +101,7 @@ PySpark can create RDDs from any storage source supported by Hadoop. We'll work 
 ## Text Files
 Read in text file into a RDD
 ```
-filename = 'bsm.txt'
+filename = 'TripStart_41300_sm.txt'
 lines = sc.textFile(filename)
 ```
 This method is more powerful than that though. You can also use:
@@ -132,8 +132,8 @@ bsm.show(5)
 To reorder columns, you actually have to create a new dataframe using the `select` method.
 ```
 columns = ['RxDevice','FileId','Gentime','Longitude','Latitude','Elevation','Speed','Heading','Yawrate']
-BSM = bsm.select(columns)
-BSM.show(5)
+df = bsm.select(columns)
+df.show(5)
 ```
 
 ### Parquet Files
@@ -154,33 +154,34 @@ File formats available for saving the DataFrame are:
 
 ### CSV
 ```
-BSM.write.csv('alexander', sep=',', header=True)
+folder = 'alexander'
+df.write.csv(folder, sep=',', header=True)
 ```
 The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `rdd.getNumPartitions()`.
 
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
 ```
-BSM.write.mode('overwrite').json('alexander')
-BSM.write.mode('overwrite').parquet('alexander')
-BSM.write.mode('overwrite').orc('alexander')
+df.write.mode('overwrite').json(folder)
+df.write.mode('overwrite').parquet(folder)
+df.write.mode('overwrite').orc(folder)
 ```
 **Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
 
 ### Reducing Partitions
 Recall that you can retrieve the number of partitions with the method  
-`BSM.rdd.getNumPartitions()`
+`df.rdd.getNumPartitions()`
 
 You can use the `coalesce` method to return a new DataFrame that has exactly *N* partitions.
 ```
-N = 20
-BSM.coalesce(N).write.mode('overwrite').parquet('alexander')
+N = 5
+df.coalesce(N).write.mode('overwrite').parquet(folder)
 ```
 The result is still a folder called *alexander* but this time with *N* files.
 
 ### `coalesce` vs `repartition`
 There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can be increased/decreased, but with `coalesce` the number of partitions can only be decreased. `coalesce` is better than `repartition` since it avoids a **full shuffle** of the data. `coalesce` moves data off the extra nodes onto the kept nodes.
 ```
-df = BSM.repartition(3)
+df_repartition = df.repartition(4)
 ```
 
 # Spark SQL
@@ -201,7 +202,7 @@ Then you can start querying the table like a regular database.
 records = sqlContext.sql('SELECT COUNT(*) as Rows FROM Bsm')
 trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId')
 driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')
-area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.0 and 42.5 AND Longitude BETWEEN -84.0 and -83.5')
+area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.4 and 42.5 AND Longitude BETWEEN -83.6 and -83.5')
 ```
 The result is always a DataFrame.  
 **Note:** No computation has been evaluated. Spark commands are evaluated lazily (i.e. when they are needed).
@@ -214,11 +215,11 @@ driver_trips.show()
 area.show()
 ```
 
-To get the number of rows in the resulting DataFrame, use the `count` method.  
-`records.count()`
+To get the number of rows in a DataFrame, use the `count` method.  
+`trips.count()`
 
 # Spark DataFrames
-If you are familiar with pandas or R DataFrames, you can forget about SQL and just use the DataFrame equivalent methods.
+If you are familiar with pandas or R DataFrames, you can alternatively forget about SQL and just use the DataFrame equivalent methods.
 A DataFrame is equivalent to a relational table in Spark SQL.
 
 ## Selecting Data
@@ -254,26 +255,30 @@ To get a list of column names use `df.columns` (same as pandas).
 To get info about the schema of the DataFrame, `df.printSchema()` or `df.dtypes` like in pandas or just `df`
 
 ## Merging Data
+```
 Left = df.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed')
 Right = df.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation')
 Merge = Left.join(Right, on=['RxDevice','FileId','Gentime'], how='inner')
-
+```
 ## Replacing Values
 Suppose you want to replace the number 10 with the value 3.
 ```
 newvalues = df.replace(10, 3, ['RxDevice']).replace(922233, 99, 'FileId')
 newvalues.show()
 ```
-
 ## Group By Method
-Similar to `pandas` groupby by method
+Similar to `pandas` group by method.
 ```
 counts = df.groupBy(['RxDevice','FileId']).count()
 counts.show()
 ```
 **Note**: If we try to do another `show` command, it will recompute the counts dataframe. This is where the `persist` method would come in handy.
-
-## Adding Columns
+```
+ct = df.groupBy(['RxDevice','FileId']).count().persist()
+ct.show()
+ct.show(100)
+```
+## Adding ColumnsR.
 To initialize with a constant
 ```
 from pyspark.sql import functions as fct
@@ -305,15 +310,15 @@ smallerdf.show()
 ```
 from pyspark.sql.functions import from_unixtime
 timedf = df.select('Gentime', (from_unixtime(df['Gentime'] / 1000000 + 1072929024).alias('DateTime')) )
+timedf.show()
 ```
 
 ## Applying A Function to a Dataframe
 Define a function that returns the length of the column value. 
 ```
-from pyspark.sql.types import IntegerType
 from pyspark.sql.functions import udf
 
-f1 = udf(lambda x: len(str(x)), IntegerType()) # if the function returns an int
+f1 = udf(lambda x: len(str(x)), 'int') # if the function returns an int
 # Using the knowledge we've gained so far, 
 newdf = df.withColumn('lengthYawrate', f1('Yawrate') )
 newdf.show()
@@ -327,6 +332,7 @@ newdf.show()
 The syntax is the same as for `pandas`.
 ```
 dedupe = df.drop_duplicates(['RxDevice','FileId'])
+dedupe.show()
 ```
 
 ## Binning Data
@@ -343,13 +349,12 @@ dfbins.registerTempTable('table')
 records = sqlContext.sql('SELECT bins, COUNT(*) as ct FROM table GROUP BY bins ORDER BY bins')
 records.show()
 ```
-or Spark DataFrame by creating a contingency table using the `crosstab` method against a constant column.
+Alternatively, you can create a contingency table using the `crosstab` method against a constant column.
 ```
 dfbins = dfbins.withColumn('constant', fct.lit(77) )
 contingency = dfbins.crosstab('bins','constant')
 contingency.show()
 ```
-
 ## Comparison
 SparkSQL|Spark DataFrame
 ---|---
@@ -357,7 +362,6 @@ SparkSQL|Spark DataFrame
 `SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.drop_duplicates(['RxDevice','FileId']).orderBy(['RxDevice','FileId'], ascending=[True,False])`
 `SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.groupby('RxDevice').where('Trips > 10')`
 `SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').filter('Yawrate > 10')`
-
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
 Suppose we want to round all applicable columns to 1 decimal place.  
