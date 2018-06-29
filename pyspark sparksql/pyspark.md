@@ -41,8 +41,8 @@
 https://databricks.com/spark/about
 
 ## Setting Python Version 
-Change Python version for PySpark to Python 3.X (instead of default Python 2.7)  
-For Python 3.6 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
+Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)  
+`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 ## Documentation
 The latest Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
@@ -425,6 +425,8 @@ Here are several ways we can do it.
 1. `for` loop
 2. `list` comprehension
 3. `reduce` function
+
+This Python code
 ```
 df1 = df
 for column in df1.columns:
