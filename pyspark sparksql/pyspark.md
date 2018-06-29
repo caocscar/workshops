@@ -26,6 +26,7 @@
      - [Converting to Datetime Format](#converting-to-datetime-format)
      - [Applying a Function to a DataFrame](#applying-a-function-to-a-dataframe)
      - [Dropping Duplicates](#dropping-duplicates)
+     - [Binning Data](#binning-data)
 - [SQL vs DataFrame Comparison](#comparison)
 - [Physical Plan](#physical-plan)
 - [Miscellaneous Methods](#miscellaneous-methods)
@@ -386,8 +387,29 @@ The syntax is the same as for `pandas`.
 dedupe = df.drop_duplicates(['RxDevice','FileId'])
 ```
 
+## Binning Data
+The Bucketizer function will bin your continuous data into ordinal data.
+```
+from pyspark.ml.feature import Bucketizer
+buck = Bucketizer(inputCol='Heading', splits=[-1, 45, 135, 225, 315, 360], outputCol='bins')
+dfbins = buck.transform(df)
+dfbins.show()
+```
+You can check the result with SparkSQL
+```
+dfbins.registerTempTable('table')
+records = sqlContext.sql('SELECT bins, COUNT(*) as ct FROM table GROUP BY bins ORDER BY bins')
+records.show()
+```
+or Spark DataFrame by creating a contingency table using the `crosstab` method against a constant column.
+```
+dfbins = dfbins.withColumn('constant', fct.lit(77) )
+contingency = dfbins.crosstab('bins','constant')
+contingency.show()
+```
+
 ## Comparison
-SQL|DataFrame
+SparkSQL|Spark DataFrame
 ---|---
 `SELECT COUNT(*) as Rows FROM Bsm`|`Rows = df.count()`
 `SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.drop_duplicates(['RxDevice','FileId']).orderBy(['RxDevice','FileId'], ascending=[True,False])`
@@ -395,30 +417,35 @@ SQL|DataFrame
 `SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').filter('Yawrate > 10')`
 
 ## Physical Plan
-You can use the `explain` method to look at the plan PySpark has made. Two different set of codes can result in the same plan.
-For example, we want to do something to every column in the DataFrame
-https://medium.com/@mrpowers/performing-operations-on-multiple-columns-in-a-pyspark-dataframe-36e97896c378
+You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
+Suppose we want to round all applicable columns to 1 decimal place.  
+**Note:** DataFrame `int` columns are not affected by rounding). 
+
+Here are several ways we can do it.
+1. `for` loop
+2. `list` comprehension
+3. `reduce` function
 ```
-code1
+df1 = df
+for column in df1.columns:
+	df1 = df1.withColumn(column, fct.round(df[column],1))
 ```
 is equivalent to
 ```
-code2
+df2 = df.select(*[fct.round(df[column],1) for column in df.columns])
 ```
-in terms of its plan.
-
-So the takeaway sometime, is to write the code version that is easier to read.
-
-## Binning Data
-`splits` input datatype should match the `inputCol` datatype
+is equivalent to
 ```
-from pyspark.ml.feature import Bucketizer
-buck = Bucketizer(splits=[-90.0, 40.0, 42.0, 44.0, 46.0, 90.0], inputCol='Latitude', outputCol='bins')
-binCol = buck.transform(df)
-binCol.show()
-buck.getSplits()
+from functools import reduce
+df3 = reduce(lambda df,column: df.withColumn(column, fct.round(df[column],1)), df.columns, df)
 ```
-**Note**: It doesn't assign the bin label but rather the bin index
+in terms of its output and execution plan.
+```
+df1.explain()
+df2.explain()
+df3.explain()
+```
+So the takeaway is, sometime you don't have to worry about optimizing Python code because PySpark rewrites it in the background. So it good programming practice would be to write code that is easy to read.
 
 ## Miscellaneous Methods
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
