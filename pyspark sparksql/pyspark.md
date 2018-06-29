@@ -278,7 +278,7 @@ ct = df.groupBy(['RxDevice','FileId']).count().persist()
 ct.show()
 ct.show(100)
 ```
-## Adding ColumnsR.
+## Adding Columns
 To initialize with a constant
 ```
 from pyspark.sql import functions as fct
