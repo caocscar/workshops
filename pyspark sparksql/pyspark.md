@@ -79,69 +79,13 @@ type(sqlContext)
 ## Exit Interactive Shell
 Type `exit()` or press Ctrl-D
 
-
-## Initializing Spark
-The first thing you must do is create a `SparkContext` object. This tells Spark how to access a cluster.
-
-`SparkConf` is where you can set the configuration for your Spark application.
-
-If you were writing a script, this would be the equivalent lines to get you to the same starting point.
-```python
-from pyspark import SparkContext, SparkConf
-from pyspark.sql import SQLContext, SparkSession
-
-conf = SparkConf()
-sc = SparkContext(conf=conf)
-sqlContext = SQLContext(sc)
-
-spark = SparkSession.builder \
-     .master("local") \
-     .appName("Word Count") \
-     .config("spark.some.config.option", "some-value") \
-     .getOrCreate()
-```
-**Note:** You can only have ONE SparkContext running at once
-
 ## Data
 As with all data analysis, you can either:
-1. Create data from scratch
+1. Create data from scratch (Practically, you should never have to do this on Spark. If you do, you're probably doing it wrong.)
 2. Read it in from an external data source
 
-Our goal is to get it into a RDD and eventually a DataFrame
+Our goal is to get data into a RDD and eventually a DataFrame
 
-## Parallelized Collections
-```python
-data = range(1000000)
-RDDdata = sc.parallelize(data)
-total = RDDdata.reduce(lambda a,b: a+b)
-```
-
-## Persistence
-We could also save RDDdata in memory by using the `persist` method. This saves it from being recomputed each time.
-```
-RDDdata_persistent = RDDdata.persist()
-total = RDDdata_persistent.reduce(lambda a,b: a=b)
-```
-You can use the `unpersist` method to manually remove a RDD or wait for Spark to automatically drop out older data partitions.
-
-## Broadcast Variables
-Broadcast variables are read-only variables that are cached on each machine (instead of passing a copy with every task).
-Below is an example of how to create one:
-```
-v = range(100)
-bv = sc.broadcast(v)
-bv.value
-```
-> After the broadcast variable is created, it should be used instead of the value v in any functions run on the cluster so that v is not shipped to the nodes more than once. In addition, the object v should not be modified after it is broadcast in order to ensure that all nodes get the same value of the broadcast variable (e.g. if the variable is shipped to a new node later).
-
-## Accumulators
-> Accumulators are variables that are only “added” to through an associative and commutative operation and can therefore be efficiently supported in parallel. They can be used to implement counters (as in MapReduce) or sums.
-```
-counter = 0
-acounter = sc.accumulator(counter)
-sc.parallelize(range(100)).foreach(lambda x: counter.add(x))
-counter.value
-```
 # PySpark Cheat Sheets
 DataCamp has created a cheat sheet for PySpark DataFrames
 https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_SQL_Cheat_Sheet_Python.pdf
@@ -452,4 +396,60 @@ So the takeaway is, sometime you don't have to worry about optimizing Python cod
 ## Miscellaneous Methods
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
+## Initializing Spark
+The first thing you must do is create a `SparkContext` object. This tells Spark how to access a cluster.
 
+`SparkConf` is where you can set the configuration for your Spark application.
+
+If you were writing a script, this would be the equivalent lines to get you to the same starting point.
+```python
+from pyspark import SparkContext, SparkConf
+from pyspark.sql import SQLContext, SparkSession
+
+conf = SparkConf()
+sc = SparkContext(conf=conf)
+sqlContext = SQLContext(sc)
+
+spark = SparkSession.builder \
+     .master("local") \
+     .appName("Word Count") \
+     .config("spark.some.config.option", "some-value") \
+     .getOrCreate()
+```
+**Note:** You can only have ONE SparkContext running at once
+
+# Prototyping with Parallelize and Collect
+
+## Parallelized Collections
+```python
+data = range(1000000)
+RDDdata = sc.parallelize(data)
+total = RDDdata.reduce(lambda a,b: a+b)
+```
+
+## Persistence
+We could also save RDDdata in memory by using the `persist` method. This saves it from being recomputed each time.
+```
+RDDdata_persistent = RDDdata.persist()
+total = RDDdata_persistent.reduce(lambda a,b: a=b)
+```
+You can use the `unpersist` method to manually remove a RDD or wait for Spark to automatically drop out older data partitions.
+
+## Broadcast Variables
+Broadcast variables are read-only variables that are cached on each machine (instead of passing a copy with every task).
+Below is an example of how to create one:
+```
+v = range(100)
+bv = sc.broadcast(v)
+bv.value
+```
+> After the broadcast variable is created, it should be used instead of the value v in any functions run on the cluster so that v is not shipped to the nodes more than once. In addition, the object v should not be modified after it is broadcast in order to ensure that all nodes get the same value of the broadcast variable (e.g. if the variable is shipped to a new node later).
+
+## Accumulators
+> Accumulators are variables that are only “added” to through an associative and commutative operation and can therefore be efficiently supported in parallel. They can be used to implement counters (as in MapReduce) or sums.
+```
+counter = 0
+acounter = sc.accumulator(counter)
+sc.parallelize(range(100)).foreach(lambda x: counter.add(x))
+counter.value
+```
