@@ -2,7 +2,8 @@
 
 ## Table of Contents
 - [Apache Spark Ecosystem](#apache-spark-ecosystem)
-- [Setting Python Version](#setting-python-version)
+- [Flux Hadoop Cluster](#flux-hadoop-cluster)
+     - [Setting Python Version](#setting-python-version)
 - [PySpark Interactive Shell](#pyspark-interactive-shell)
      - [Exit Shell](#exit-interactive-shell)
 - [PySpark Cheat Sheets](#pyspark-cheat-sheets)
@@ -40,7 +41,10 @@
 
 https://databricks.com/spark/about
 
-## Setting Python Version 
+## Flux Hadoop Cluster
+Login to `flux-haddop-login.arc-ts.umich.edu` using your flux account
+
+### Setting Python Version 
 Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)  
 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
