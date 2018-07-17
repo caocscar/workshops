@@ -13,7 +13,8 @@
 - [Spark SQL](#spark-sql)
      - [Set up a Temp Table](#set-up-a-temp-table)
      - [SQL Queries](#sql-queries)
- - [Spark DataFrames](#spark-dataframes)   
+ - [Spark DataFrames](#spark-dataframes)
+     - [Row Count](#row-count)
      - [Selecting Data](#selecting-data)
      - [Renaming Columns](#renaming-columns)
      - [Filtering Rows](#filtering-rows)
@@ -87,10 +88,10 @@ Type `exit()` or press Ctrl-D
 
 ## Data
 As with all data analysis, you can either:
-1. Create data from scratch (Practically, you should never have to do this on Spark. If you do, you're probably doing it wrong.)
-2. Read it in from an external data source
+1. Create data from scratch (Practically, you should never have to do this on Spark. If you do, you're probably doing it wrong).
+2. Read it in from an external data source.
 
-Our goal is to get data into a RDD and eventually a DataFrame
+Our goal is to get data into a RDD and eventually a DataFrame.
 
 # PySpark Cheat Sheets
 DataCamp has created a cheat sheet for PySpark DataFrames
@@ -229,14 +230,14 @@ area.show()
 ```
 
 # Spark DataFrames
-If you are familiar with pandas or R DataFrames, you can alternatively forget about SQL and just use the DataFrame equivalent methods.
-A DataFrame is equivalent to a relational table in Spark SQL.
+If you are familiar with **pandas** or **R** DataFrames, you can alternatively forget about SQL and just use the DataFrame equivalent methods. A DataFrame is equivalent to a relational table in Spark SQL.
 
 ## Row Count
 To get the number of rows in a DataFrame, use the `count` method.  
 `trips.count()`
 
 ## Selecting Data
+To select a subset of columns, use the `select` method with the order of column names that you want.
 `subset = df.select('longitude','latitude','elevation')`  
 **Note:** For some reason, column names are not case sensitive
 
@@ -247,21 +248,24 @@ from pyspark.sql.functions import *
 rename1 = subset.select(col('Longitude').alias('lon'), col('Latitude').alias('lat'), 'elevation' )
 rename2 = subset.selectExpr('longitude as lon', 'latitude as lat', 'elevation')
 rename3 = subset.withColumnRenamed('Longitude','lon').withColumnRenamed('latitude','lat')
+rename1.show()
 ```
 
-**Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab \t, and newline \n characters. You might still get same error after renaming it. Not sure why. Better to take care of it before uploading data file.
+**Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab `\t`, and newline `\n` characters. You might still get same error after renaming it. Not sure why. Better to take care of it before uploading data file.
 
 ## Filtering Rows
 To filter rows based on a criteria use the `filter` method. `where` can also be used as it is an alias for `filter`.  
-`filter = df.filter('Longitude < -84').where('Latitude > 43')`
+```
+df_filter = df.filter('Longitude < -84').where('Latitude > 43')
+df_filter.show()
+```
 
 ## Descriptive Statistics
+The `describe` method will return the following values for you for each numeric column: count, mean, standard deviation, minimum, and maximum.
 To check if the DataFrame is correct, we can use the `agg` method along with the `min`,`max` functions.
 ```
 summary = df_filter.describe(['Longitude','Latitude'])
 summary.show()
-lonlat = df_filter.agg(max('Longitude'), min('Latitude') )
-lonlat.show()
 ```
 
 ## Column Info
