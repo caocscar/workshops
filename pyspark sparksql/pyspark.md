@@ -42,7 +42,9 @@
 https://databricks.com/spark/about
 
 ## Flux Hadoop Cluster
-Login to `flux-haddop-login.arc-ts.umich.edu` using your flux account
+Login to `flux-hadoop-login.arc-ts.umich.edu` using your flux account
+
+**Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
 ### Setting Python Version 
 Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)  
@@ -66,15 +68,15 @@ Advantages: Relatively fast and can work with TB of data
 Disadvantages: Readability and debugging spark messages is a pain
 
 # PySpark Interactive Shell
-The interactive shell is analogous to a Jupyter Notebook. This command starts up the interactive shell for PySpark. The first example line of code starts the shell with the default settings. The second example line starts the shell with custom settings.
+The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark. The first example line of code starts the shell with the default settings. The second example line starts the shell with custom settings.
 ```
-pyspark --master yarn --queue workshop    
+pyspark --master yarn --queue workshop
 pyspark --master yarn --queue workshop --num-executors 20 --executor-memory 5g --executor-cores 4
 ```
 The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
-`sc` is a SparkContext and `sqlContext` is as self-described. Making your own SparkContext will not work. 
+`sc` is a SparkContext and `sqlContext` is as self-described. 
 
-You can check this by looking at the variable type.  
+You can check this by looking at the variables already defined.  
 ```python
 type(sc)
 type(sqlContext)
@@ -100,7 +102,7 @@ https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_Cheat_Sheet_Pyt
 # File IO
 
 ## Reading Files
-PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called parquet.
+PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called *parquet*.
 
 ## Text Files
 Read in text file into a RDD
@@ -131,9 +133,13 @@ bsm = sqlContext.createDataFrame(table)
 bsm
 bsm.show(5)
 ```
+OR
+
+`bsm = table.toDF()`
+
 **Note:** Columns are now in alphabetical order and not in order constructed.
 
-To reorder columns, you actually have to create a new dataframe using the `select` method.
+To restore columns to the original order, you actually have to create a new dataframe using the `select` method.
 ```
 columns = ['RxDevice','FileId','Gentime','Longitude','Latitude','Elevation','Speed','Heading','Yawrate']
 df = bsm.select(columns)
@@ -143,8 +149,8 @@ df.show(5)
 ### Parquet Files
 Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder.
 ```
-foldername = '41300'
-df = sqlContext.read.parquet(foldername)
+folder = 'uniqname'
+df = sqlContext.read.parquet(folder)
 ```
 
 ## Writing Files
@@ -153,20 +159,20 @@ Documentation for the `df.write` method is located at http://spark.apache.org/do
 File formats available for saving the DataFrame are:
 1. csv (really any delimiter)
 2. json
-3. parquet w/ snappy
-4. ORC w/ snappy
+3. parquet w/ snappy compression
+4. ORC w/ snappy compression
 
 ### CSV
 ```
-folder = 'alexander'
+folder = 'uniqname'
 df.write.csv(folder, sep=',', header=True)
 ```
-The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `rdd.getNumPartitions()`.
+The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `bsm.rdd.getNumPartitions()`.
 
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
 ```
-df.write.mode('overwrite').json(folder)
 df.write.mode('overwrite').parquet(folder)
+df.write.mode('overwrite').json(folder)
 df.write.mode('overwrite').orc(folder)
 ```
 **Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
@@ -183,9 +189,10 @@ df.coalesce(N).write.mode('overwrite').parquet(folder)
 The result is still a folder called *alexander* but this time with *N* files.
 
 ### `coalesce` vs `repartition`
-There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can be increased/decreased, but with `coalesce` the number of partitions can only be decreased. `coalesce` is better than `repartition` since it avoids a **full shuffle** of the data. `coalesce` moves data off the extra nodes onto the kept nodes.
+There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can  increase/decrease, but with `coalesce` the number of partitions can only decrease. `coalesce` is better than `repartition` in this sense since it avoids a **full shuffle** of the data. `coalesce` just moves data off the extra nodes onto the kept nodes.
 ```
 df_repartition = df.repartition(4)
+df_repartition.rdd.getNumPartitions()
 ```
 
 # Spark SQL
@@ -197,7 +204,9 @@ You can perform SQL queries on Spark DataFrames after you register them as a tab
 
 ### Set up a Temp Table
 `df.registerTempTable('Bsm')`
+
 OR
+
 `sqlContext.registerDataFrameAsTable(df, "Bsm")`
 
 ### SQL Queries
@@ -219,12 +228,13 @@ driver_trips.show()
 area.show()
 ```
 
-To get the number of rows in a DataFrame, use the `count` method.  
-`trips.count()`
-
 # Spark DataFrames
 If you are familiar with pandas or R DataFrames, you can alternatively forget about SQL and just use the DataFrame equivalent methods.
 A DataFrame is equivalent to a relational table in Spark SQL.
+
+## Row Count
+To get the number of rows in a DataFrame, use the `count` method.  
+`trips.count()`
 
 ## Selecting Data
 `subset = df.select('longitude','latitude','elevation')`  
@@ -422,7 +432,7 @@ spark = SparkSession.builder \
      .config("spark.some.config.option", "some-value") \
      .getOrCreate()
 ```
-**Note:** You can only have ONE SparkContext running at once
+**Note:** You can only have ONE SparkContext running at once. Making your own SparkContext will not work in the interactive shell since one already exists at startup.
 
 # Prototyping with Parallelize and Collect
 
