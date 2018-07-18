@@ -73,6 +73,8 @@ The interactive shell is analogous to a python console. The following command st
 pyspark --master yarn --queue workshop
 pyspark --master yarn --queue workshop --num-executors 20 --executor-memory 5g --executor-cores 4
 ```
+**Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.` This usually resolves itself after a few seconds. If not, try again at a later time.
+
 The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
 `sc` is a SparkContext and `sqlContext` is as self-described. 
 
@@ -169,6 +171,7 @@ df.write.csv(folder, sep=',', header=True)
 ```
 The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `bsm.rdd.getNumPartitions()`.
 
+### Parquet, JSON, ORC
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
 ```
 df.write.mode('overwrite').parquet(folder)
@@ -241,14 +244,15 @@ To select a subset of columns, use the `select` method with the order of column 
 **Note:** For some reason, column names are not case sensitive
 
 ## Renaming Columns
-There are multiple ways to rename columns. Here are three ways using the `alias`, `selectExpr`, `withColumnRenamed` methods.
+There are multiple ways to rename columns. Here are three ways using the `withColumnRenamed`, `alias`, `selectExpr`  methods.
 ```
-from pyspark.sql.functions import *
-rename1 = subset.select(col('Longitude').alias('lon'), col('Latitude').alias('lat'), 'elevation' )
-rename2 = subset.selectExpr('longitude as lon', 'latitude as lat', 'elevation')
-rename3 = subset.withColumnRenamed('Longitude','lon').withColumnRenamed('latitude','lat')
+from pyspark.sql.functions import col
+rename1 = subset.withColumnRenamed('Longitude','lon').withColumnRenamed('latitude','lat')
+rename2 = subset.select(col('Longitude').alias('lon'), col('Latitude').alias('lat'), 'elevation' )
+rename3 = subset.selectExpr('longitude as lon', 'latitude as lat', 'elevation')
 rename1.show()
 ```
+**Tip:** I recommend using `withColumnRenamed` since the other methods will only return the columns selected.
 
 **Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab `\t`, and newline `\n` characters. You might still get same error after renaming it. Not sure why. Better to take care of it before uploading data file.
 
@@ -272,11 +276,37 @@ To get a list of column names use `df.columns` (same as pandas).
 To get info about the schema of the DataFrame, `df.printSchema()` or `df.dtypes` like in pandas or just `df`
 
 ## Merging Data
+You can merge two DataFrames using the `join` method. The `join` method works similar to the `merge` method in `pandas`. You specify your left and right DataFrames with the `on` argument and `how` argument specifying which columns to merge on and what kind of join operation you want to perform, respectively.
+
+If you want to merge on two columns with different names, you would use the following syntax.  
+`[Left.first_name == Right.given_name, Left.last_name == Right.family_name]`  
+and pass the list to the `on` argument.
+
+The different how (join) options are: `inner, cross, outer, full, full_outer, left, left_outer, right, right_outer, left_semi, left_anti.`
+The default join is `inner` as with most programs.
 ```
 Left = df.select('RxDevice','FileId','Gentime','Heading','Yawrate','Speed')
 Right = df.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevation')
 Merge = Left.join(Right, on=['RxDevice','FileId','Gentime'], how='inner')
+Merge.show(5)
 ```
+Now, here is a merge example where the column names are different and the same.
+```
+R = Right.withColumnRenamed('Gentime','T')
+merge_expr = [Left.Gentime == R.T, Left.FileId == Right.FileId]
+M = Left.join(R, on=merge_expr)
+M.show(5)
+```
+We can see there are some duplicate columns in the merged DataFrame. This is a result of columns have the same name in each of the DataFrame. This will cause trouble down the road if you try to select a duplicate column.  
+`M.select('FileId')`
+
+You will get an error that looks something like this.  
+`Reference 'FileId' is ambiguous, could be: FileId#1L, FileId#159L.`
+
+You can't drop the duplicate columns or rename them because they have the same name and you can't reference them by index. 
+
+In the hybrid case where you are merging on columns that have some matching and non-matching names, the best solution I can find would be to rename the columns so that they are all matching or all non-matching column names. You should also rename any column names that are the duplicated in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
+
 ## Replacing Values
 Suppose you want to replace the number 10 with the value 3.
 ```
@@ -289,7 +319,10 @@ Similar to `pandas` group by method.
 counts = df.groupBy(['RxDevice','FileId']).count()
 counts.show()
 ```
-**Note**: If we try to do another `show` command, it will recompute the counts dataframe. This is where the `persist` method would come in handy.
+**Note**: If we try to do another `show` command, it will recompute the *counts* dataframe. 
+
+## Persistence
+Use the `persist` method to save the computation you performed to prevent it from being re-computed.
 ```
 ct = df.groupBy(['RxDevice','FileId']).count().persist()
 ct.show()
@@ -297,8 +330,9 @@ ct.show(100)
 ```
 ## Adding Columns
 To initialize with a constant
-```
+```python
 from pyspark.sql import functions as fct
+
 newdf = df.withColumn('newcol', fct.lit(7) )
 newdf.show()
 ```
@@ -332,7 +366,7 @@ timedf.show()
 
 ## Applying A Function to a Dataframe
 Define a function that returns the length of the column value. 
-```
+```python
 from pyspark.sql.functions import udf
 
 f1 = udf(lambda x: len(str(x)), 'int') # if the function returns an int
@@ -354,8 +388,9 @@ dedupe.show()
 
 ## Binning Data
 The Bucketizer function will bin your continuous data into ordinal data.
-```
+```python
 from pyspark.ml.feature import Bucketizer
+
 buck = Bucketizer(inputCol='Heading', splits=[-1, 45, 135, 225, 315, 360], outputCol='bins')
 dfbins = buck.transform(df)
 dfbins.show()
@@ -400,8 +435,9 @@ is equivalent to
 df2 = df.select(*[fct.round(df[column],1) for column in df.columns])
 ```
 is equivalent to
-```
+``` python
 from functools import reduce
+
 df3 = reduce(lambda df,column: df.withColumn(column, fct.round(df[column],1)), df.columns, df)
 ```
 in terms of its output and execution plan.
