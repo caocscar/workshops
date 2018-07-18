@@ -32,6 +32,7 @@
 - [SQL vs DataFrame Comparison](#comparison)
 - [Physical Plan](#physical-plan)
 - [Miscellaneous Methods](#miscellaneous-methods)   
+- [Running PySpark as a Script](#running-pyspark-as-a-script)
 
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
@@ -42,7 +43,7 @@
 https://databricks.com/spark/about
 
 ## Flux Hadoop Cluster
-SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` and login using your flux account
+SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` and login using your flux account and 2FA.
 
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
@@ -420,7 +421,7 @@ Here are several ways we can do it.
 2. `list` comprehension
 3. `reduce` function
 
-This Python code
+This PySpark code
 ```
 df1 = df
 for column in df1.columns:
@@ -442,17 +443,21 @@ df1.explain()
 df2.explain()
 df3.explain()
 ```
-So the takeaway is, sometime you don't have to worry about optimizing Python code because PySpark rewrites it in the background. So it good programming practice would be to write code that is easy to read.
+So the takeaway is, sometime you don't have to worry about optimizing code because PySpark re-interprets it in the background. So good programming practice would dictate making the code as easy to read as possible.
 
 ## Miscellaneous Methods
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
-## Initializing Spark
-The first thing you must do is create a `SparkContext` object. This tells Spark how to access a cluster.
+**Tip:** The Spark version on Fladoop is updated every time maintenance is performed. When you look at the Spark documentation, make sure you are looking up docs for the same version (and not necessarily the latest version). 
 
-`SparkConf` is where you can set the configuration for your Spark application.
+You can check the current version of Spark using `SparkContext.version` or `sc.version` OR if you are outside of the PySpark interactive shell `spark-shell --version`.
 
-If you were writing a script, this would be the equivalent lines to get you to the same starting point.
+## Running PySpark as a Script
+If you don't run PySpark through the interactive shell but rather as a python script. You will need some additional code at the top of your script. 
+
+The first thing you must do is create a `SparkContext` object. This tells Spark how to access a cluster. `SparkConf()` is where you can set the configuration for your Spark application.
+
+To get to the same starting point as the interactive shell, you need to start with these additional lines.
 ```python
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext, SparkSession
