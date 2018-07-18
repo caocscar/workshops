@@ -357,7 +357,7 @@ You will get an error that looks something like this.
 
 You can't drop the duplicate columns or rename them because they have the same name and you can't reference them by index. 
 
-In the hybrid case where you are merging on columns that have some matching and non-matching names, the best solution I can find would be to rename the columns so that they are all matching or all non-matching column names. You should also rename any column names that are the duplicated in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
+So when you are merging on columns that have some matching and non-matching names, the best solution I can find is to rename the columns so that they are either all matching or all non-matching. You should also rename any column names that are the same in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
 
 ## Group By Method
 Similar to `pandas` group by method.
@@ -448,7 +448,7 @@ So the takeaway is, sometime you don't have to worry about optimizing code becau
 ## Miscellaneous Methods
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
-**Tip:** The Spark version on Fladoop is updated every time maintenance is performed. When you look at the Spark documentation, make sure you are looking up docs for the same version (and not necessarily the latest version). 
+**Tip:** The Spark version on Flux Hadoop is updated every time maintenance is performed. When you look at the Spark documentation, make sure you are looking up docs for the same version (and not necessarily the latest version). 
 
 You can check the current version of Spark using `SparkContext.version` or `sc.version` OR if you are outside of the PySpark interactive shell `spark-shell --version`.
 
