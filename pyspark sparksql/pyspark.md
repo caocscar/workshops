@@ -31,8 +31,7 @@
      - [Binning Data](#binning-data)
 - [SQL vs DataFrame Comparison](#comparison)
 - [Physical Plan](#physical-plan)
-- [Miscellaneous Methods](#miscellaneous-methods)
-    
+- [Miscellaneous Methods](#miscellaneous-methods)   
 
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
@@ -43,7 +42,7 @@
 https://databricks.com/spark/about
 
 ## Flux Hadoop Cluster
-Login to `flux-hadoop-login.arc-ts.umich.edu` using your flux account
+SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` and login using your flux account
 
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
