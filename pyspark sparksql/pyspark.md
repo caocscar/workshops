@@ -51,13 +51,13 @@ Let's look at the *Overview* section. You should take away a couple of things fr
 2. Spark performs in-memory computation. It does not write/read intermediate results to disk.
 
 ### APIs
-Spark has API bindings to Scala, Java, Python and R. The official documentation page shows code snippets for the first three languages (sorry , R users).
+Spark has API bindings to **Scala, Java, Python and R**. The official documentation page shows code snippets for the first three languages (sorry, **R** users).
 
-The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.0/api/python/index.html
+The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.0/api/python/index.html.  We will mostly deal with the `pyspark.sql` module https://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html.
 
 ## Pros/Cons
 Advantages: Relatively fast and can work with TB of data  
-Disadvantages: Readability and debugging spark messages is a pain
+Disadvantages: Readability and debugging Spark messages is a pain
 
 ## Flux Hadoop Cluster
 SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and 2FA.
@@ -69,20 +69,21 @@ Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)
 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 # PySpark Interactive Shell
-The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark. The first example line of code starts the shell with the default settings. The second example line starts the shell with custom settings.
-```
-pyspark --master yarn --queue workshop
-pyspark --master yarn --queue workshop --num-executors 20 --executor-memory 5g --executor-cores 4
-```
+The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings.  
+`pyspark --master yarn --queue workshop`
+
+The following line adds some custom settings.  
+`pyspark --master yarn --queue workshop --num-executors 20 --executor-memory 5g --executor-cores 4`
+
 **Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.` This usually resolves itself after a few seconds. If not, try again at a later time.
 
 The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
 `sc` is a SparkContext and `sqlContext` is as self-described. 
 
-You can check this by looking at the variables already defined.  
-```python
-type(sc)
-type(sqlContext)
+You can check this by typing the variable names.  
+```
+sc
+sqlContext
 ```
 
 ## Exit Interactive Shell
@@ -90,8 +91,8 @@ Type `exit()` or press Ctrl-D
 
 ## Data
 As with all data analysis, you can either:
-1. Create data from scratch (Practically, you should never have to do this on Spark. If you do, you're probably doing it wrong).
-2. Read it in from an external data source.
+1. Read it in from an external data source.
+2. Create data from scratch. (Practically, you should never have to do this on Spark. If you do, you're probably doing it wrong).
 
 Our goal is to get data into a RDD and eventually a DataFrame.
 
@@ -102,13 +103,15 @@ https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_SQL_Cheat_Sheet
 They also have one for PySpark RDDs
 https://s3.amazonaws.com/assets.datacamp.com/blog_assets/PySpark_Cheat_Sheet_Python.pdf
 
+We'll cover some basic stuff on RDD at the end.
+
 # File IO
 
 ## Reading Files
 PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called *parquet*.
 
 ## Text Files
-Read in text file into a RDD
+Use the `textFile` method to read in a text file into a RDD.
 ```
 filename = 'TripStart_41300_sm.txt'
 lines = sc.textFile(filename)
@@ -128,7 +131,7 @@ Next, parse each row specifying delimiter
 Create a RDD of `Row` objects
 ```
 from pyspark.sql import Row
-table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]),      Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
+table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]), Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
 ```
 Create a DataFrame from RDD of `Row` objects and view
 ```
@@ -250,8 +253,15 @@ df_filter = df.filter('Longitude < -84').where('Latitude > 43')
 df_filter.show()
 ```
 ## Selecting Columns
-To select a subset of columns, use the `select` method with the order of column names that you want.
+To select a subset of columns, use the `select` method with the order of column names that you want.  
 `subset = df.select('longitude','latitude','elevation')`  
+
+You can also pass it a list of column names as we did previously.
+```python
+cols = ['longitude','latitude','elevation']
+subset = df.select(cols)
+```
+
 **Note:** For some reason, column names are not case sensitive
 
 ## Descriptive Statistics
@@ -277,9 +287,9 @@ rename1.show()
 ## Adding Columns
 To initialize with a constant
 ```python
-from pyspark.sql import functions as fct
+from pyspark.sql.functions import lit
 
-newdf = df.withColumn('newcol', fct.lit(7) )
+newdf = df.withColumn('newcol', lit(7) )
 newdf.show()
 ```
 To calculate a new column based on another one
@@ -429,7 +439,7 @@ for column in df1.columns:
 ```
 is equivalent to
 ```
-df2 = df.select(*[fct.round(df[column],1) for column in df.columns])
+df2 = df.select([fct.round(df[column],1) for column in df.columns])
 ```
 is equivalent to
 ``` python
