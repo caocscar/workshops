@@ -42,17 +42,8 @@
 
 https://databricks.com/spark/about
 
-## Flux Hadoop Cluster
-SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` and login using your flux account and 2FA.
-
-**Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
-
-### Setting Python Version 
-Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)  
-`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
-
 ## Documentation
-The latest Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
+The relevant Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
 
 ### Introduction Spark Overview
 Let's look at the *Overview* section. You should take away a couple of things from the Spark Overview:
@@ -67,6 +58,15 @@ The Spark Python API documentation can be found at https://spark.apache.org/docs
 ## Pros/Cons
 Advantages: Relatively fast and can work with TB of data  
 Disadvantages: Readability and debugging spark messages is a pain
+
+## Flux Hadoop Cluster
+SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and 2FA.
+
+**Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
+
+### Setting Python Version 
+Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)  
+`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark. The first example line of code starts the shell with the default settings. The second example line starts the shell with custom settings.
