@@ -15,19 +15,19 @@
      - [SQL Queries](#sql-queries)
  - [Spark DataFrames](#spark-dataframes)
      - [Row Count](#row-count)
-     - [Selecting Data](#selecting-data)
-     - [Renaming Columns](#renaming-columns)
-     - [Filtering Rows](#filtering-rows)
-     - [Descriptive Statistics](#descriptive-statistics)
      - [Column Info](#column-info)
-     - [Merging Data](#merging-data)
-     - [Replacing Values](#replacing-values)
-     - [Group By Method](#group-by-method)
+     - [Selecting Rows](#selecting-rows)
+     - [Selecting Columns](#selecting-columns)
+     - [Descriptive Statistics](#descriptive-statistics)
+     - [Renaming Columns](#renaming-columns)
      - [Adding Columns](#adding-columns)
      - [Deleting Columns](#deleting-columns)
-     - [Converting to Datetime Format](#converting-to-datetime-format)
+     - [Replacing Values](#replacing-values)
      - [Applying a Function to a DataFrame](#applying-a-function-to-a-dataframe)
      - [Dropping Duplicates](#dropping-duplicates)
+     - [Merging Data](#merging-data)
+     - [Group By Method](#group-by-method)
+     - [Converting to Datetime Format](#converting-to-datetime-format)
      - [Binning Data](#binning-data)
 - [SQL vs DataFrame Comparison](#comparison)
 - [Physical Plan](#physical-plan)
@@ -238,11 +238,28 @@ If you are familiar with **pandas** or **R** DataFrames, you can alternatively f
 To get the number of rows in a DataFrame, use the `count` method.  
 `trips.count()`
 
-## Selecting Data
+## Column Info
+To get a list of column names use `df.columns` (same as pandas).  
+To get info about the schema of the DataFrame, `df.printSchema()` or `df.dtypes` like in pandas or just `df`
+
+## Selecting Rows
+To select rows based on a criteria use the `filter` method. `where` can also be used as it is an alias for `filter`.  
+```
+df_filter = df.filter('Longitude < -84').where('Latitude > 43')
+df_filter.show()
+```
+## Selecting Columns
 To select a subset of columns, use the `select` method with the order of column names that you want.
 `subset = df.select('longitude','latitude','elevation')`  
 **Note:** For some reason, column names are not case sensitive
 
+## Descriptive Statistics
+The `describe` method will return the following values for you for each numeric column: count, mean, standard deviation, minimum, and maximum.
+To check if the DataFrame is correct, we can use the `agg` method along with the `min`,`max` functions.
+```
+summary = df_filter.describe(['Longitude','Latitude'])
+summary.show()
+```
 ## Renaming Columns
 There are multiple ways to rename columns. Here are three ways using the `withColumnRenamed`, `alias`, `selectExpr`  methods.
 ```
@@ -256,25 +273,59 @@ rename1.show()
 
 **Tip:** Parquet does not like column names to have any of the following characters `,;{}()=` in addition to spaces, tab `\t`, and newline `\n` characters. You might still get same error after renaming it. Not sure why. Better to take care of it before uploading data file.
 
-## Filtering Rows
-To filter rows based on a criteria use the `filter` method. `where` can also be used as it is an alias for `filter`.  
-```
-df_filter = df.filter('Longitude < -84').where('Latitude > 43')
-df_filter.show()
-```
+## Adding Columns
+To initialize with a constant
+```python
+from pyspark.sql import functions as fct
 
-## Descriptive Statistics
-The `describe` method will return the following values for you for each numeric column: count, mean, standard deviation, minimum, and maximum.
-To check if the DataFrame is correct, we can use the `agg` method along with the `min`,`max` functions.
+newdf = df.withColumn('newcol', fct.lit(7) )
+newdf.show()
 ```
-summary = df_filter.describe(['Longitude','Latitude'])
-summary.show()
+To calculate a new column based on another one
 ```
+newdf = newdf.withColumn('colname', df['Latitude'] - 42)
+newdf.show()
+```
+## Deleting Columns
+To drop a column, use the `drop` method.  
+```
+smalldf = newdf.drop('colname')
+smalldf.show()
+```
+To drop multiple columns, you can use the `*iterator` idiom with an iterator (e.g. list). 
+```
+columns2delete = ['newcol','colname','elevation']
+smallerdf = newdf.drop(*columns2delete)
+smallerdf.show()
+```
+## Applying A Function to a Dataframe
+Define a function that returns the length of the column value. 
+```python
+from pyspark.sql.functions import udf
 
-## Column Info
-To get a list of column names use `df.columns` (same as pandas).  
-To get info about the schema of the DataFrame, `df.printSchema()` or `df.dtypes` like in pandas or just `df`
+f1 = udf(lambda x: len(str(x)), 'int') # if the function returns an int
+newdf = df.withColumn('lengthYawrate', f1('Yawrate') )
+newdf.show()
+```
+OR
+```
+newdf = df.select('Yawrate', f1("Yawrate").alias("lengthYaw"))
+newdf.show()
+```
+**Note**: `udf` stands for user defined function.
 
+## Replacing Values
+Suppose you want to replace the number 10 with the value 3.
+```
+newvalues = df.replace(10, 3, ['RxDevice']).replace(922233, 99, 'FileId')
+newvalues.show()
+```
+## Dropping Duplicates
+The syntax is the same as for `pandas`.
+```
+dedupe = df.drop_duplicates(['RxDevice','FileId'])
+dedupe.show()
+```
 ## Merging Data
 You can merge two DataFrames using the `join` method. The `join` method works similar to the `merge` method in `pandas`. You specify your left and right DataFrames with the `on` argument and `how` argument specifying which columns to merge on and what kind of join operation you want to perform, respectively.
 
@@ -307,12 +358,6 @@ You can't drop the duplicate columns or rename them because they have the same n
 
 In the hybrid case where you are merging on columns that have some matching and non-matching names, the best solution I can find would be to rename the columns so that they are all matching or all non-matching column names. You should also rename any column names that are the duplicated in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
 
-## Replacing Values
-Suppose you want to replace the number 10 with the value 3.
-```
-newvalues = df.replace(10, 3, ['RxDevice']).replace(922233, 99, 'FileId')
-newvalues.show()
-```
 ## Group By Method
 Similar to `pandas` group by method.
 ```
@@ -328,62 +373,13 @@ ct = df.groupBy(['RxDevice','FileId']).count().persist()
 ct.show()
 ct.show(100)
 ```
-## Adding Columns
-To initialize with a constant
-```python
-from pyspark.sql import functions as fct
-
-newdf = df.withColumn('newcol', fct.lit(7) )
-newdf.show()
-```
-
-To calculate a new column based on another one
-```
-newdf = newdf.withColumn('colname', df['Latitude'] - 42)
-newdf.show()
-```
-
-## Deleting Columns
-To drop a column, use the `drop` method.  
-```
-smalldf = newdf.drop('colname')
-smalldf.show()
-```
-To drop multiple columns, you can use the `*iterator` idiom with an iterator (e.g. list). 
-```
-columns2delete = ['newcol','colname','elevation']
-smallerdf = newdf.drop(*columns2delete)
-smallerdf.show()
-```
-
 ## Converting to DateTime Format
 `Gentime` is in units of microseconds so we divide by a million to convert to seconds. The epoch for `Gentime` is in 2004 instead of 1970 so we add the necessary seconds to account for this.
-```
+```python
 from pyspark.sql.functions import from_unixtime
+
 timedf = df.select('Gentime', (from_unixtime(df['Gentime'] / 1000000 + 1072929024).alias('DateTime')) )
 timedf.show()
-```
-
-## Applying A Function to a Dataframe
-Define a function that returns the length of the column value. 
-```python
-from pyspark.sql.functions import udf
-
-f1 = udf(lambda x: len(str(x)), 'int') # if the function returns an int
-# Using the knowledge we've gained so far, 
-newdf = df.withColumn('lengthYawrate', f1('Yawrate') )
-newdf.show()
-# Alternatively
-newdf = df.select('Yawrate', f1("Yawrate").alias("lengthYaw"))
-newdf.show()
-```
-**Note**: `udf` stands for user defined function.
-
-## Dropping Duplicates
-The syntax is the same as for `pandas`.
-```
-dedupe = df.drop_duplicates(['RxDevice','FileId'])
-dedupe.show()
 ```
 
 ## Binning Data
@@ -401,7 +397,7 @@ dfbins.registerTempTable('table')
 records = sqlContext.sql('SELECT bins, COUNT(*) as ct FROM table GROUP BY bins ORDER BY bins')
 records.show()
 ```
-Alternatively, you can create a contingency table using the `crosstab` method against a constant column.
+Alternatively, you check the result with DataFrames by creating a contingency table using the `crosstab` method against a constant column.
 ```
 dfbins = dfbins.withColumn('constant', fct.lit(77) )
 contingency = dfbins.crosstab('bins','constant')
