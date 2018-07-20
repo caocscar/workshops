@@ -470,19 +470,36 @@ The first thing you must do is create a `SparkContext` object. This tells Spark 
 To get to the same starting point as the interactive shell, you need to start with these additional lines.
 ```python
 from pyspark import SparkContext, SparkConf
-from pyspark.sql import SQLContext, SparkSession
+from pyspark.sql import SQLContext
+
+conf = SparkConf()
+sc = SparkContext(conf=conf)
+sqlContext = SQLContext(sc)
+```
+**Note:** You can only have ONE SparkContext running at once. Making your own SparkContext will not work in the interactive shell since one already exists at startup.
+
+So an example script would look like this.
+```
+from pyspark import SparkContext, SparkConf
+from pyspark.sql import SQLContext, Row
 
 conf = SparkConf()
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
-spark = SparkSession.builder \
-     .master("local") \
-     .appName("Word Count") \
-     .config("spark.some.config.option", "some-value") \
-     .getOrCreate()
+filename = 'TripStart_41300_sm.txt'
+lines = sc.textFile(filename)
+columns = lines.map(lambda x: x.split(','))
+table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]), Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
+bsm = sqlContext.createDataFrame(table)
+columns = ['RxDevice','FileId','Gentime','Longitude','Latitude','Elevation','Speed','Heading','Yawrate']
+df = bsm.select(columns)
+folder = 'alexander'
+df.write.mode('overwrite').orc(folder)
 ```
-**Note:** You can only have ONE SparkContext running at once. Making your own SparkContext will not work in the interactive shell since one already exists at startup.
+
+Submit the Spark job through the command line like this.
+`spark-submit --master yarn --num-executors 20 --executor-memory 5g --executor-cores 4 job.py`
 
 # Prototyping with Parallelize and Collect
 
