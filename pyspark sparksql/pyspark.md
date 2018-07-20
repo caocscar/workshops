@@ -27,6 +27,7 @@
      - [Dropping Duplicates](#dropping-duplicates)
      - [Merging Data](#merging-data)
      - [Group By Method](#group-by-method)
+     - [Persistence](#persistence)
      - [Converting to Datetime Format](#converting-to-datetime-format)
      - [Binning Data](#binning-data)
 - [SQL vs DataFrame Comparison](#comparison)
@@ -77,13 +78,16 @@ The following line adds some custom settings.
 
 **Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.` This usually resolves itself after a few seconds. If not, try again at a later time.
 
-The interactive shell does not start with a clean slate. It already has a couple of objects defined for you.  
-`sc` is a SparkContext and `sqlContext` is as self-described. 
+The interactive shell does not start with a clean slate. It already has several objects defined for you. 
+- `sc` is a SparkContext
+- `sqlContext` is a SQLContext object
+- `spark` is a SparkSession object
 
 You can check this by typing the variable names.  
 ```
 sc
 sqlContext
+spark
 ```
 
 ## Exit Interactive Shell
@@ -483,7 +487,7 @@ So an example script would look like this.
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext, Row
 
-conf = SparkConf()
+conf = SparkConf().setAppName('Workshop Ex')
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
@@ -498,7 +502,7 @@ folder = 'alexander'
 df.write.mode('overwrite').orc(folder)
 ```
 
-Submit the Spark job through the command line like this.
+Submit the Spark job through the command line like this.  
 `spark-submit --master yarn --num-executors 20 --executor-memory 5g --executor-cores 4 job.py`
 
 # Prototyping with Parallelize and Collect
