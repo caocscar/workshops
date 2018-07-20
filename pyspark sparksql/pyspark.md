@@ -137,7 +137,7 @@ Create a RDD of `Row` objects
 from pyspark.sql import Row
 table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]), Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
 ```
-Create a DataFrame from RDD of `Row` objects and view
+Create a DataFrame from RDD of `Row` objects and view using the `show` method.
 ```
 bsm = sqlContext.createDataFrame(table)
 bsm
@@ -177,7 +177,7 @@ File formats available for saving the DataFrame are:
 folder = 'uniqname'
 df.write.csv(folder, sep=',', header=True)
 ```
-The result is a folder called `alexander` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `bsm.rdd.getNumPartitions()`.
+The result is a folder called `uniqname` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `bsm.rdd.getNumPartitions()`.
 
 ### Parquet, JSON, ORC
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
@@ -197,31 +197,38 @@ You can use the `coalesce` method to return a new DataFrame that has exactly *N*
 N = 5
 df.coalesce(N).write.mode('overwrite').parquet(folder)
 ```
-The result is still a folder called *alexander* but this time with *N* files.
+The result is still the same folder but this time with *N* files.
 
 ### `coalesce` vs `repartition`
 There is a also a `repartition` method to do something similiar. One difference is that with `repartition`, the number of partitions can  increase/decrease, but with `coalesce` the number of partitions can only decrease. `coalesce` is better than `repartition` in this sense since it avoids a **full shuffle** of the data. `coalesce` just moves data off the extra nodes onto the kept nodes.
 ```
 df_repartition = df.repartition(4)
 df_repartition.rdd.getNumPartitions()
+df_repartition.show(5)
 ```
+**Note**: If we try to do another `show` command, it will recompute the *df_repartition* dataframe. 
+
+## Persistence
+Use the `persist` method to save the computation you performed to prevent it from being re-computed.
+```
+df_repartition = df.repartition(4).persist()
+df_repartition.show(7)
+df_repartition.show(2)
+```
+Now there should be no waiting.
 
 # Spark SQL
-Spark SQL is a Spark module for structured data processing.
-
-The latest SQL programming guide can be found at https://spark.apache.org/docs/latest/sql-programming-guide.html.
-
+Spark SQL is a Spark module for structured data processing.  
+The latest SQL programming guide can be found at https://spark.apache.org/docs/latest/sql-programming-guide.html.  
 You can perform SQL queries on Spark DataFrames after you register them as a table.
 
 ### Set up a Temp Table
-`df.registerTempTable('Bsm')`
+To create a temporary table for SQL queries, you can use either the `registerTempTable` or `sqlContext.registerDataFrameAsTable` method.
 
-OR
-
-`sqlContext.registerDataFrameAsTable(df, "Bsm")`
+`df.registerTempTable('Bsm')` OR `sqlContext.registerDataFrameAsTable(df, 'Bsm')`
 
 ### SQL Queries
-Then you can start querying the table like a regular database.
+Then you can start querying the table like a regular database using SQL. BTW, I also run a Intro SQL workshop for CSCAR.
 ```
 records = sqlContext.sql('SELECT COUNT(*) as Rows FROM Bsm')
 trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId')
@@ -230,13 +237,11 @@ area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.4 and 42.5 AN
 ```
 The result is always a DataFrame.  
 **Note:** No computation has been evaluated. Spark commands are evaluated lazily (i.e. when they are needed).
-
-To view the results, use the `show` method.
 ```
-records.show()
-trips.show()
-driver_trips.show()
-area.show()
+records.show() # or records.persist().show()
+trips.show() # or trips.persist().show()
+driver_trips.show() # or driver_trips.persist().show()
+area.show() # or area.persist().show()
 ```
 
 # Spark DataFrames
@@ -270,7 +275,6 @@ subset = df.select(cols)
 
 ## Descriptive Statistics
 The `describe` method will return the following values for you for each numeric column: count, mean, standard deviation, minimum, and maximum.
-To check if the DataFrame is correct, we can use the `agg` method along with the `min`,`max` functions.
 ```
 summary = df_filter.describe(['Longitude','Latitude'])
 summary.show()
@@ -330,7 +334,7 @@ newdf.show()
 **Note**: `udf` stands for user defined function.
 
 ## Replacing Values
-Suppose you want to replace the number 10 with the value 3.
+Suppose you want to replace the RxDevice and FileId with other arbitrary values.
 ```
 newvalues = df.replace(10, 3, ['RxDevice']).replace(922233, 99, 'FileId')
 newvalues.show()
@@ -379,15 +383,6 @@ Similar to `pandas` group by method.
 counts = df.groupBy(['RxDevice','FileId']).count()
 counts.show()
 ```
-**Note**: If we try to do another `show` command, it will recompute the *counts* dataframe. 
-
-## Persistence
-Use the `persist` method to save the computation you performed to prevent it from being re-computed.
-```
-ct = df.groupBy(['RxDevice','FileId']).count().persist()
-ct.show()
-ct.show(100)
-```
 ## Converting to DateTime Format
 `Gentime` is in units of microseconds so we divide by a million to convert to seconds. The epoch for `Gentime` is in 2004 instead of 1970 so we add the necessary seconds to account for this.
 ```python
@@ -396,7 +391,6 @@ from pyspark.sql.functions import from_unixtime
 timedf = df.select('Gentime', (from_unixtime(df['Gentime'] / 1000000 + 1072929024).alias('DateTime')) )
 timedf.show()
 ```
-
 ## Binning Data
 The Bucketizer function will bin your continuous data into ordinal data.
 ```python
