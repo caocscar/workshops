@@ -433,21 +433,22 @@ Here are several ways we can do it.
 
 This PySpark code
 ```
+from pyspark.sql.functions import round
 df1 = df
 for column in df1.columns:
-	df1 = df1.withColumn(column, fct.round(df[column],1))
+	df1 = df1.withColumn(column, round(df[column],1))
 ```
 is equivalent to
 ```
-df2 = df.select([fct.round(df[column],1) for column in df.columns])
+df2 = df.select([round(df[column],1) for column in df.columns])
 ```
 is equivalent to
 ``` python
 from functools import reduce
 
-df3 = reduce(lambda df,column: df.withColumn(column, fct.round(df[column],1)), df.columns, df)
+df3 = reduce(lambda df,column: df.withColumn(column, round(df[column],1)), df.columns, df)
 ```
-in terms of its output and execution plan.
+Looking at the plan Spark has laid out for each of the variables, it is equivalent in terms of its output (except column name) and execution plan.
 ```
 df1.explain()
 df2.explain()
@@ -463,9 +464,9 @@ There are a lot of methods available. A list of them are here http://spark.apach
 You can check the current version of Spark using `SparkContext.version` or `sc.version` OR if you are outside of the PySpark interactive shell `spark-shell --version`.
 
 ## Running PySpark as a Script
-If you don't run PySpark through the interactive shell but rather as a python script. You will need some additional code at the top of your script. 
+If you don't run PySpark through the interactive shell but rather as a Python script. You will need some additional code at the top of your script. 
 
-The first thing you must do is create a `SparkContext` object. This tells Spark how to access a cluster. `SparkConf()` is where you can set the configuration for your Spark application.
+The first thing you must do is create a `SparkContext()` object. This tells Spark how to access a cluster. `SparkConf()` is where you can set the configuration for your Spark application.
 
 To get to the same starting point as the interactive shell, you need to start with these additional lines.
 ```python
