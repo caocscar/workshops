@@ -360,7 +360,7 @@ Right = df.select('RxDevice','FileId','Gentime','Longitude','Latitude','Elevatio
 Merge = Left.join(Right, on=['RxDevice','FileId','Gentime'], how='inner')
 Merge.show(5)
 ```
-Now, here is a merge example where the column names are different and the same.
+Now, here is a merge example where the column names are different and the same. You should get a warning about merging identically named columns this way.  `WARN Column: Constructing trivially true equals predicate, 'FileId#1L = FileId#1L'. Perhaps you need to use aliases.` We'll see the issues with it shortly.
 ```
 R = Right.withColumnRenamed('Gentime','T')
 merge_expr = [Left.Gentime == R.T, Left.FileId == Right.FileId]
@@ -373,7 +373,9 @@ We can see there are some duplicate columns in the merged DataFrame. This is a r
 You will get an error that looks something like this.  
 `Reference 'FileId' is ambiguous, could be: FileId#1L, FileId#159L.`
 
-You can't drop the duplicate columns or rename them because they have the same name and you can't reference them by index. 
+You can't drop the duplicate columns or rename them because they have the same name. You could reference them by index but it turns into ugly looking unreadable code. 
+
+`df.select([col for i,col in enumerate(df.columns) if i == 1]).show(10)`
 
 So when you are merging on columns that have some matching and non-matching names, the best solution I can find is to rename the columns so that they are either all matching or all non-matching. You should also rename any column names that are the same in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
 
@@ -408,7 +410,7 @@ records.show()
 ```
 Alternatively, you check the result with DataFrames by creating a contingency table using the `crosstab` method against a constant column.
 ```
-dfbins = dfbins.withColumn('constant', fct.lit(77) )
+dfbins = dfbins.withColumn('constant', lit(77) )
 contingency = dfbins.crosstab('bins','constant')
 contingency.show()
 ```
