@@ -70,7 +70,7 @@ Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)
 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 # PySpark Interactive Shell
-The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings.  
+The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue. 
 `pyspark --master yarn --queue workshop`
 
 The following line adds some custom settings.  
@@ -373,9 +373,7 @@ We can see there are some duplicate columns in the merged DataFrame. This is a r
 You will get an error that looks something like this.  
 `Reference 'FileId' is ambiguous, could be: FileId#1L, FileId#159L.`
 
-You can't drop the duplicate columns or rename them because they have the same name. You could reference them by index but it turns into ugly looking unreadable code. 
-
-`df.select([col for i,col in enumerate(df.columns) if i == 1]).show(10)`
+You can't drop the duplicate columns or rename them because they have the same name and you can't reference them by index like in `pandas`.
 
 So when you are merging on columns that have some matching and non-matching names, the best solution I can find is to rename the columns so that they are either all matching or all non-matching. You should also rename any column names that are the same in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
 
