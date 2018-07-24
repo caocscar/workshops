@@ -396,7 +396,7 @@ The Bucketizer function will bin your continuous data into ordinal data.
 ```python
 from pyspark.ml.feature import Bucketizer
 
-buck = Bucketizer(inputCol='Heading', splits=[-1, 45, 135, 225, 315, 360], outputCol='bins')
+buck = Bucketizer(inputCol='Heading', splits=[-1, 45, 135, 225, 315, 361], outputCol='bins')
 dfbins = buck.transform(df)
 dfbins.show()
 ```
