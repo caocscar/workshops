@@ -177,7 +177,7 @@ File formats available for saving the DataFrame are:
 folder = 'uniqname'
 df.write.csv(folder, sep=',', header=True)
 ```
-The result is a folder called `uniqname` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `bsm.rdd.getNumPartitions()`.
+The result is a folder called `uniqname` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `df.rdd.getNumPartitions()`.
 
 ### Parquet, JSON, ORC
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
@@ -232,7 +232,7 @@ Then you can start querying the table like a regular database using SQL. BTW, I 
 ```
 records = sqlContext.sql('SELECT COUNT(*) as Rows FROM Bsm')
 trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')
-driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')
+driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 60')
 area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.4 and 42.5 AND Longitude BETWEEN -83.6 and -83.5')
 ```
 The result is always a DataFrame.  
@@ -380,7 +380,7 @@ So when you are merging on columns that have some matching and non-matching name
 ## Grouping Data
 To group by column values, use the `groupBy` method.
 ```
-counts = df.groupBy(['RxDevice','FileId']).count().persist()
+counts = df.groupBy(['RxDevice','FileId']).count()
 counts.show()
 ```
 ## Sorting Data
@@ -420,14 +420,6 @@ dfbins = dfbins.withColumn('constant', lit(77) )
 contingency = dfbins.crosstab('bins','constant')
 contingency.show()
 ```
-## SQL vs DataFrame Comparison
-SparkSQL|Spark DataFrame
----|---
-`SELECT COUNT(*) as Rows FROM Bsm`|`Rows = df.count()`
-`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.select('RxDevice','FileId').drop_duplicates(['RxDevice', 'FileId']).orderBy(['RxDevice', 'FileId'], ascending=[True,False])`
-`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.select('RxDevice', 'FileId').drop_duplicates(['FileId']).groupby('RxDevice').count().withColumnRenamed('count', 'Trips').where('Trips > 10')`
-`SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').where('Yawrate > 10')`
-
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
 Suppose we want to round all applicable columns to 1 decimal place.  
@@ -512,7 +504,7 @@ Submit the Spark job through the command line like this.
 Re-create the following SQL queries using only DataFrame methods.
 1. `area = sqlContext.sql('SELECT COUNT(*) as pts FROM Bsm WHERE Latitude BETWEEN 43 and 44 AND Longitude BETWEEN -84 and -83')`
 2. `trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')`
-3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')`
+3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 60')`
 
 In other words,
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
