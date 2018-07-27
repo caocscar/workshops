@@ -33,7 +33,6 @@
      - [Persistence](#persistence)
      - [Converting to DateTime Format](#converting-to-datetime-format)
      - [Binning Data](#binning-data)
-- [SQL vs DataFrame Comparison](#sql-vs-dataframe-comparison)
 - [Physical Plan](#physical-plan)
 - [Miscellaneous Methods](#miscellaneous-methods)   
 - [Running PySpark as a Script](#running-pyspark-as-a-script)
@@ -505,6 +504,16 @@ df = bsm.select(columns)
 folder = 'uniqname'
 df.write.mode('overwrite').orc(folder)
 ```
-
 Submit the Spark job through the command line like this.  
 `spark-submit --master yarn --num-executors 20 --executor-memory 5g --executor-cores 4 job.py`
+
+# Exercise
+Re-create the following SQL queries using only DataFrame methods.
+1. `area = sqlContext.sql('SELECT COUNT(*) as pts FROM Bsm WHERE Latitude BETWEEN 43 and 44 AND Longitude BETWEEN -84 and -83')`
+2. `trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')`
+3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')`
+
+In other words,
+1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
+2. Create a two column DataFrame that returns a unique set of device-trip ids (RxDevice, FileId) sorted by RxDevice in ascending order and then FileId in descending order.
+3. Create a two column DataFrame that lists RxDevices with more than 10 trips.
