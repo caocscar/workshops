@@ -10,6 +10,8 @@
 - [File I/O](#file-io)
      - [Reading Files](#reading-files)
      - [Writing Files](#writing-files)
+     - [Reducing Partitions](#reducing-partitions)
+     - [Persistence](#persistence)
 - [Spark SQL](#spark-sql)
      - [Set up a Temp Table](#set-up-a-temp-table)
      - [SQL Queries](#sql-queries)
@@ -22,16 +24,16 @@
      - [Renaming Columns](#renaming-columns)
      - [Adding Columns](#adding-columns)
      - [Deleting Columns](#deleting-columns)
-     - [Replacing Values](#replacing-values)
      - [Applying a Function to a DataFrame](#applying-a-function-to-a-dataframe)
+     - [Replacing Values](#replacing-values)
      - [Dropping Duplicates](#dropping-duplicates)
      - [Merging Data](#merging-data)
-     - [Grouping Data](#group-data)
+     - [Grouping Data](#grouping-data)
      - [Sorting Data](#sorting-data)
      - [Persistence](#persistence)
-     - [Converting to Datetime Format](#converting-to-datetime-format)
+     - [Converting to DateTime Format](#converting-to-datetime-format)
      - [Binning Data](#binning-data)
-- [SQL vs DataFrame Comparison](#comparison)
+- [SQL vs DataFrame Comparison](#sql-vs-dataframe-comparison)
 - [Physical Plan](#physical-plan)
 - [Miscellaneous Methods](#miscellaneous-methods)   
 - [Running PySpark as a Script](#running-pyspark-as-a-script)
@@ -418,7 +420,7 @@ dfbins = dfbins.withColumn('constant', lit(77) )
 contingency = dfbins.crosstab('bins','constant')
 contingency.show()
 ```
-## Comparison
+## SQL vs DataFrame Comparison
 SparkSQL|Spark DataFrame
 ---|---
 `SELECT COUNT(*) as Rows FROM Bsm`|`Rows = df.count()`
