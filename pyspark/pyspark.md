@@ -57,10 +57,6 @@ Spark has API bindings to **Scala, Java, Python and R**. The official documentat
 
 The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.0/api/python/index.html.  We will mostly deal with the `pyspark.sql` module https://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html.
 
-## Pros/Cons
-Advantages: Relatively fast and can work with TB of data  
-Disadvantages: Readability and debugging Spark messages is a pain
-
 ## Flux Hadoop Cluster
 SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and 2FA.
 
