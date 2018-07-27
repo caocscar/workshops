@@ -424,8 +424,8 @@ contingency.show()
 SparkSQL|Spark DataFrame
 ---|---
 `SELECT COUNT(*) as Rows FROM Bsm`|`Rows = df.count()`
-`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.select('RxDevice','FileId').drop_duplicates(['RxDevice','FileId']).orderBy(['RxDevice','FileId'], ascending=[True,False])`
-`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.select('RxDevice','FileId').drop_duplicates(['FileId']).groupby('RxDevice').count().withColumnRenamed('count','Trips').where('Trips > 10')`
+`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.select('RxDevice','FileId').drop_duplicates(['RxDevice', 'FileId']).orderBy(['RxDevice', 'FileId'], ascending=[True,False])`
+`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.select('RxDevice', 'FileId').drop_duplicates(['FileId']).groupby('RxDevice').count().withColumnRenamed('count', 'Trips').where('Trips > 10')`
 `SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').where('Yawrate > 10')`
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
