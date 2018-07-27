@@ -67,7 +67,7 @@ Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)
 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 # PySpark Interactive Shell
-The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue. 
+The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
 `pyspark --master yarn --queue workshop`
 
 The following line adds some custom settings.  
@@ -114,7 +114,8 @@ PySpark can create RDDs from any storage source supported by Hadoop. We'll work 
 ## Text Files
 Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information.
 ```
-filename = 'bsm_sm.txt'
+filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
+filename = 'bsm_sm.txt' # local directory
 lines = sc.textFile(filename)
 ```
 This method is more powerful than that though. You can also use:
@@ -273,7 +274,7 @@ subset = df.select(cols)
 ## Descriptive Statistics
 The `describe` method will return the following values for you for each numeric column: count, mean, standard deviation, minimum, and maximum.
 ```
-summary = df_filter.describe(['Longitude','Latitude'])
+summary = subset.describe(['Longitude','Latitude'])
 summary.show()
 ```
 ## Renaming Columns
@@ -319,13 +320,13 @@ Define a function that returns the length of the column value.
 ```python
 from pyspark.sql.functions import udf
 
-f1 = udf(lambda x: len(str(x)), 'int') # if the function returns an int
-newdf = df.withColumn('lengthYawrate', f1('Yawrate') )
+string_length = udf(lambda x: len(str(x)), 'int') # if the function returns an int
+newdf = df.withColumn('lengthYawrate', string_length('Yawrate') )
 newdf.show()
 ```
 OR
 ```
-newdf = df.select('Yawrate', f1("Yawrate").alias("lengthYaw"))
+newdf = df.select('Yawrate', string_length("Yawrate").alias("lengthYaw"))
 newdf.show()
 ```
 **Note**: `udf` stands for user defined function.
@@ -498,7 +499,7 @@ table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=
 bsm = sqlContext.createDataFrame(table)
 columns = ['RxDevice','FileId','Gentime','Longitude','Latitude','Elevation','Speed','Heading','Yawrate']
 df = bsm.select(columns)
-folder = 'alexander'
+folder = 'uniqname'
 df.write.mode('overwrite').orc(folder)
 ```
 
