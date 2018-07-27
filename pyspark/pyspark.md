@@ -26,7 +26,8 @@
      - [Applying a Function to a DataFrame](#applying-a-function-to-a-dataframe)
      - [Dropping Duplicates](#dropping-duplicates)
      - [Merging Data](#merging-data)
-     - [Group By Method](#group-by-method)
+     - [Grouping Data](#group-data)
+     - [Sorting Data](#sorting-data)
      - [Persistence](#persistence)
      - [Converting to Datetime Format](#converting-to-datetime-format)
      - [Binning Data](#binning-data)
@@ -117,7 +118,7 @@ PySpark can create RDDs from any storage source supported by Hadoop. We'll work 
 ## Text Files
 Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information.
 ```
-filename = 'TripStart_41300_sm.txt'
+filename = 'bsm_sm.txt'
 lines = sc.textFile(filename)
 ```
 This method is more powerful than that though. You can also use:
@@ -377,11 +378,17 @@ You can't drop the duplicate columns or rename them because they have the same n
 
 So when you are merging on columns that have some matching and non-matching names, the best solution I can find is to rename the columns so that they are either all matching or all non-matching. You should also rename any column names that are the same in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
 
-## Group By Method
-Similar to `pandas` group by method.
+## Grouping Data
+To group by column values, use the `groupBy` method.
 ```
-counts = df.groupBy(['RxDevice','FileId']).count()
+counts = df.groupBy(['RxDevice','FileId']).count().persist()
 counts.show()
+```
+## Sorting Data
+To sort by columns, use the `orderBy` method or its alias `sort`.
+```
+counts_sorted = counts.orderBy(["count", "RxDevice"], ascending=[True, False])
+counts_sorted.show()
 ```
 ## Converting to DateTime Format
 `Gentime` is in units of microseconds so we divide by a million to convert to seconds. The epoch for `Gentime` is in 2004 instead of 1970 so we add the necessary seconds to account for this.
@@ -392,7 +399,7 @@ timedf = df.select('Gentime', (from_unixtime(df['Gentime'] / 1000000 + 107292902
 timedf.show()
 ```
 ## Binning Data
-The Bucketizer function will bin your continuous data into ordinal data.
+The Bucketizer function will bin your continuous data into ordinal data. 
 ```python
 from pyspark.ml.feature import Bucketizer
 
@@ -400,6 +407,8 @@ buck = Bucketizer(inputCol='Heading', splits=[-1, 45, 135, 225, 315, 361], outpu
 dfbins = buck.transform(df)
 dfbins.show()
 ```
+**Note:** The imperfection of the bin size is due to data quality.
+
 You can check the result with SparkSQL
 ```
 dfbins.registerTempTable('table')
@@ -486,7 +495,7 @@ conf = SparkConf().setAppName('Workshop Ex')
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
-filename = 'TripStart_41300_sm.txt'
+filename = 'bsm_sm.txt'
 lines = sc.textFile(filename)
 columns = lines.map(lambda x: x.split(','))
 table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]), Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
