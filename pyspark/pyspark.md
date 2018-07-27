@@ -231,7 +231,7 @@ To create a temporary table for SQL queries, you can use either the `registerTem
 Then you can start querying the table like a regular database using SQL. BTW, I also run a Intro SQL workshop for CSCAR.
 ```
 records = sqlContext.sql('SELECT COUNT(*) as Rows FROM Bsm')
-trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice DESC, FileId')
+trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')
 driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')
 area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.4 and 42.5 AND Longitude BETWEEN -83.6 and -83.5')
 ```
@@ -340,7 +340,7 @@ newvalues = df.replace(10, 3, ['RxDevice']).replace(922233, 99, 'FileId')
 newvalues.show()
 ```
 ## Dropping Duplicates
-The syntax is the same as for `pandas`.
+The syntax is the same as for `pandas` with the exception that the argument must be a list except when considering all the columns.
 ```
 dedupe = df.drop_duplicates(['RxDevice','FileId'])
 dedupe.show()
@@ -424,9 +424,9 @@ contingency.show()
 SparkSQL|Spark DataFrame
 ---|---
 `SELECT COUNT(*) as Rows FROM Bsm`|`Rows = df.count()`
-`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.drop_duplicates(['RxDevice','FileId']).orderBy(['RxDevice','FileId'], ascending=[True,False])`
-`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.groupby('RxDevice').where('Trips > 10')`
-`SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').filter('Yawrate > 10')`
+`SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.select('RxDevice','FileId').drop_duplicates(['RxDevice','FileId']).orderBy(['RxDevice','FileId'], ascending=[True,False])`
+`SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.select('RxDevice','FileId').drop_duplicates(['FileId']).groupby('RxDevice').count().withColumnRenamed('count','Trips').where('Trips > 10')`
+`SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').where('Yawrate > 10')`
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
 Suppose we want to round all applicable columns to 1 decimal place.  
