@@ -215,7 +215,7 @@ df_repartition = df.repartition(4).persist()
 df_repartition.show(7)
 df_repartition.show(2)
 ```
-Now there should be no waiting.
+Now there should be no waiting. You can use the `unpersist` method to manually remove a RDD or wait for Spark to automatically drop out older data partitions.
 
 # Spark SQL
 Spark SQL is a Spark module for structured data processing.  
@@ -427,6 +427,7 @@ SparkSQL|Spark DataFrame
 `SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC`|`df.select('RxDevice','FileId').drop_duplicates(['RxDevice', 'FileId']).orderBy(['RxDevice', 'FileId'], ascending=[True,False])`
 `SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10`|`df.select('RxDevice', 'FileId').drop_duplicates(['FileId']).groupby('RxDevice').count().withColumnRenamed('count', 'Trips').where('Trips > 10')`
 `SELECT * FROM Bsm WHERE Speed BETWEEN 30 and 50 and Yawrate > 10`|`df.filter('Speed >= 30').filter('Speed <= 50').where('Yawrate > 10')`
+
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
 Suppose we want to round all applicable columns to 1 decimal place.  
@@ -507,39 +508,3 @@ df.write.mode('overwrite').orc(folder)
 
 Submit the Spark job through the command line like this.  
 `spark-submit --master yarn --num-executors 20 --executor-memory 5g --executor-cores 4 job.py`
-
-# Prototyping with Parallelize and Collect
-
-## Parallelized Collections
-```python
-data = range(1000000)
-RDDdata = sc.parallelize(data)
-total = RDDdata.reduce(lambda a,b: a+b)
-```
-
-## Persistence
-We could also save RDDdata in memory by using the `persist` method. This saves it from being recomputed each time.
-```
-RDDdata_persistent = RDDdata.persist()
-total = RDDdata_persistent.reduce(lambda a,b: a=b)
-```
-You can use the `unpersist` method to manually remove a RDD or wait for Spark to automatically drop out older data partitions.
-
-## Broadcast Variables
-Broadcast variables are read-only variables that are cached on each machine (instead of passing a copy with every task).
-Below is an example of how to create one:
-```
-v = range(100)
-bv = sc.broadcast(v)
-bv.value
-```
-> After the broadcast variable is created, it should be used instead of the value v in any functions run on the cluster so that v is not shipped to the nodes more than once. In addition, the object v should not be modified after it is broadcast in order to ensure that all nodes get the same value of the broadcast variable (e.g. if the variable is shipped to a new node later).
-
-## Accumulators
-> Accumulators are variables that are only “added” to through an associative and commutative operation and can therefore be efficiently supported in parallel. They can be used to implement counters (as in MapReduce) or sums.
-```
-counter = 0
-acounter = sc.accumulator(counter)
-sc.parallelize(range(100)).foreach(lambda x: counter.add(x))
-counter.value
-```
