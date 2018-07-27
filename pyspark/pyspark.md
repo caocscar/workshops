@@ -36,6 +36,7 @@
 - [Physical Plan](#physical-plan)
 - [Miscellaneous Methods](#miscellaneous-methods)   
 - [Running PySpark as a Script](#running-pyspark-as-a-script)
+- [Exercises](#exercises)
 
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
@@ -507,7 +508,7 @@ df.write.mode('overwrite').orc(folder)
 Submit the Spark job through the command line like this.  
 `spark-submit --master yarn --num-executors 20 --executor-memory 5g --executor-cores 4 job.py`
 
-# Exercise
+# Exercises
 Re-create the following SQL queries using only DataFrame methods.
 1. `area = sqlContext.sql('SELECT COUNT(*) as pts FROM Bsm WHERE Latitude BETWEEN 43 and 44 AND Longitude BETWEEN -84 and -83')`
 2. `trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')`
