@@ -116,8 +116,8 @@ PySpark can create RDDs from any storage source supported by Hadoop. We'll work 
 ## Text Files
 Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information.
 ```
+#filename = 'bsm_sm.txt' # local directory
 filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
-filename = 'bsm_sm.txt' # local directory
 lines = sc.textFile(filename)
 ```
 This method is more powerful than that though. You can also use:
