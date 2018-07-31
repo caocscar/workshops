@@ -192,7 +192,7 @@ df.write.mode('overwrite').json(folder)
 **Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
 
 ## Setting Number of Partitions
-You can set your number of partitions during file input with the `textFile` method by providing an optinal second argument. By default, Spark creates one partition for each block of the file (blocks being 128MB by default in HDFS), but you can also ask for a higher number of partitions by passing a larger value. Note that you cannot have fewer partitions than blocks. If you specify fewer partitions than blocks, it will default to the number of blocks.
+You can set your number of partitions during file input with the `textFile` method by providing an optional second argument (`minSplits`). By default, Spark creates one partition for each block of the file (blocks being 128MB by default in HDFS), but you can also ask for a higher number of partitions by passing a larger value. Note that you cannot have fewer partitions than blocks. If you specify fewer partitions than blocks, it will default to the number of blocks.
 
 ### Reducing Partitions
 Recall that you can retrieve the number of partitions with the method  
