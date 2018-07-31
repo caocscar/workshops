@@ -10,7 +10,7 @@
 - [File I/O](#file-io)
      - [Reading Files](#reading-files)
      - [Writing Files](#writing-files)
-     - [Reducing Partitions](#reducing-partitions)
+     - [Setting Number of Partitions](#setting-number-of-partitions)
      - [Persistence](#persistence)
 - [Spark SQL](#spark-sql)
      - [Set up a Temp Table](#set-up-a-temp-table)
@@ -116,7 +116,6 @@ PySpark can create RDDs from any storage source supported by Hadoop. We'll work 
 ## Text Files
 Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information.
 ```
-#filename = 'bsm_sm.txt' # local directory
 filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
 lines = sc.textFile(filename)
 ```
@@ -155,14 +154,18 @@ columns = ['RxDevice','FileId','Gentime','Longitude','Latitude','Elevation','Spe
 df = bsm.select(columns)
 df.show(5)
 ```
-
 ### Parquet Files
 Parquet is a column-store data format in Hadoop. They consist of a set of files in a folder.
 ```
 folder = 'uniqname'
 df = sqlContext.read.parquet(folder)
 ```
-
+### ORC Files
+ORC (Optimized Row Columnar) is a columnar data format in Hadoop. They consist of a set of files in a folder.
+```
+folder = 'uniqname'
+df = sqlContext.read.orc(folder)
+```
 ## Writing Files
 Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
 
@@ -179,14 +182,17 @@ df.write.csv(folder, sep=',', header=True)
 ```
 The result is a folder called `uniqname` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `df.rdd.getNumPartitions()`.
 
-### Parquet, JSON, ORC
+### Parquet, ORC, JSON
 The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
 ```
 df.write.mode('overwrite').parquet(folder)
-df.write.mode('overwrite').json(folder)
 df.write.mode('overwrite').orc(folder)
+df.write.mode('overwrite').json(folder)
 ```
 **Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
+
+## Setting Number of Partitions
+You can set your number of partitions during file input with the `textFile` method by providing an optinal second argument. By default, Spark creates one partition for each block of the file (blocks being 128MB by default in HDFS), but you can also ask for a higher number of partitions by passing a larger value. Note that you cannot have fewer partitions than blocks. If you specify fewer partitions than blocks, it will default to the number of blocks.
 
 ### Reducing Partitions
 Recall that you can retrieve the number of partitions with the method  
@@ -232,7 +238,7 @@ Then you can start querying the table like a regular database using SQL. BTW, I 
 ```
 records = sqlContext.sql('SELECT COUNT(*) as Rows FROM Bsm')
 trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')
-driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 60')
+driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')
 area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.4 and 42.5 AND Longitude BETWEEN -83.6 and -83.5')
 ```
 The result is always a DataFrame.  
@@ -504,7 +510,7 @@ Submit the Spark job through the command line like this.
 Re-create the following SQL queries using only DataFrame methods.
 1. `area = sqlContext.sql('SELECT COUNT(*) as pts FROM Bsm WHERE Latitude BETWEEN 43 and 44 AND Longitude BETWEEN -84 and -83')`
 2. `trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')`
-3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 60')`
+3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')`
 
 In other words,
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
