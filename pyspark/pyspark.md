@@ -287,11 +287,12 @@ summary.show()
 ```
 ## Renaming Columns
 There are multiple ways to rename columns. Here are three ways using the `withColumnRenamed`, `alias`, `selectExpr`  methods.
-```
+```python
 from pyspark.sql.functions import col
+
 rename1 = subset.withColumnRenamed('Longitude','lon').withColumnRenamed('latitude','lat')
-rename2 = subset.select(col('Longitude').alias('lon'), col('Latitude').alias('lat'), 'elevation' )
-rename3 = subset.selectExpr('longitude as lon', 'latitude as lat', 'elevation')
+rename2 = subset.select(col('Longitude').alias('lon'), col('Latitude').alias('lat'))
+rename3 = subset.selectExpr('longitude as lon', 'latitude as lat',)
 rename1.show()
 ```
 **Tip:** I recommend using `withColumnRenamed` since the other methods will only return the columns selected.
@@ -432,23 +433,24 @@ Suppose we want to round all applicable columns to 1 decimal place.
 **Note:** DataFrame `int` columns are not affected by rounding). 
 
 Here are several ways we can do it.
-1. `for` loop
-2. `list` comprehension
-3. `reduce` function
+1. `for` loop with `withColumn`
+2. `list` comprehension with `select`
+3. `reduce` function with `withColumn`
 
 This PySpark code
-```
+```python
 from pyspark.sql.functions import round
+
 df1 = df
 for column in df1.columns:
 	df1 = df1.withColumn(column, round(df[column],1))
 ```
 is equivalent to
-```
+```python
 df2 = df.select([round(df[column],1) for column in df.columns])
 ```
 is equivalent to
-``` python
+```python
 from functools import reduce
 
 df3 = reduce(lambda df,column: df.withColumn(column, round(df[column],1)), df.columns, df)
