@@ -1,6 +1,6 @@
 # Introduction to Python
 
-There are no notes for this workshop. I do it freestyle using a project-based learning approach.
+There are no notes for this workshop. I do it freestyle using a project-based learning approach and provide attendees with a beginner's cheat sheet.
 
 Exercises  
 https://goo.gl/bw1J9L
