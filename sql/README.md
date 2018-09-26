@@ -10,3 +10,6 @@ The following command will render your Jupyter Notebook into a **reveal.js** sli
 The `--post serve` command starts up a local server to host it. 
 
 **Tip**: Make sure your Jupyter notebook is closed before running the command.
+
+## Reference
+More options available at https://nbconvert.readthedocs.io/en/latest/config_options.html
