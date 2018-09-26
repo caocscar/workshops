@@ -14,4 +14,6 @@ The `--post serve` command starts up a local server to host it.
 More options available at https://nbconvert.readthedocs.io/en/latest/config_options.html
 
 ## Posting your Slide Deck online
-Go to http://nbviewer.jupyter.org/
+1. Go to http://nbviewer.jupyter.org
+2. Enter url where the Jupyter Notebook file can be located.
+3. Make sure **nbviewer** is in *slide mode* and not *notebook mode* in the upper right icon.
