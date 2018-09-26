@@ -1,7 +1,5 @@
 # Introduction to SQL
-The HTML slide deck is at https://goo.gl/ZhKEt5
-
-The original Jupyter Notebook can be found at https://github.com/kaitcorn/intro-to-SQL
+Here is the [workshop slide deck](http://nbviewer.jupyter.org/format/slides/github/caocscar/workshops/blob/master/sql/SQLslides.ipynb#/)
 
 ## Converting Jupyter Notebook into Slide Deck
 The following command will render your Jupyter Notebook into a **reveal.js** slide deck. 
