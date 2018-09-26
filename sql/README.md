@@ -16,4 +16,4 @@ More options available at https://nbconvert.readthedocs.io/en/latest/config_opti
 ## Posting your Slide Deck online
 1. Go to http://nbviewer.jupyter.org
 2. Enter url where the Jupyter Notebook file can be located.
-3. Make sure **nbviewer** is in *slide mode* and not *notebook mode* in the upper right icon.
+3. Make sure **nbviewer** is in *slide mode* and not *notebook mode* among the icons in the top right.
