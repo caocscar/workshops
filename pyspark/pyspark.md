@@ -65,10 +65,14 @@ SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuT
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
 ### Setting Python Version 
-Change Python version for PySpark to Python 3.6 (instead of default Python 2.7) 
-`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
+Change Python version for PySpark to Python 3.X (instead of default Python 2.7) 
 
-**Note**: This only works for Fladoop currently.
+For Cavium (Python 3.4.8)  
+`export PYSPARK_PYTHON=/bin/python3`  
+`export PYSPARK_DRIVER_PYTHON=/bin/python3`
+
+For Flux Hadoop (Python 3.6)  
+`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
