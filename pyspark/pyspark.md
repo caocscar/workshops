@@ -65,15 +65,17 @@ SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuT
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
 ### Setting Python Version 
-Change Python version for PySpark to Python 3.6 (instead of default Python 2.7)  
+Change Python version for PySpark to Python 3.6 (instead of default Python 2.7) 
 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
+
+**Note**: This only works for Fladoop currently.
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
 `pyspark --master yarn --queue workshop`
 
-The following line adds some custom settings.  
-`pyspark --master yarn --queue workshop --num-executors 20 --executor-memory 5g --executor-cores 4`
+The following line adds some custom settings (this will get you 56GB RAM).  
+`pyspark --master yarn --queue workshop --num-executors 10 --conf spark.ui.port=4050`
 
 **Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.` This usually resolves itself after a few seconds. If not, try again at a later time.
 
