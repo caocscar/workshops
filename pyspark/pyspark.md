@@ -37,6 +37,7 @@
 - [Miscellaneous Methods](#miscellaneous-methods)   
 - [Running PySpark as a Script](#running-pyspark-as-a-script)
 - [Exercises](#exercises)
+- [Spark UI](#spark-ui)
 
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
@@ -524,3 +525,9 @@ In other words,
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
 2. Create a two column DataFrame that returns a unique set of device-trip ids (RxDevice, FileId) sorted by RxDevice in ascending order and then FileId in descending order.
 3. Create a two column DataFrame that lists RxDevices with more than 10 trips.
+
+# Spark UI
+This is a GUI to see active and completed Spark jobs.
+
+On campus Ports 4040-4150 open for spark UI
+http://cavium-thunderx.arc-ts.umich.edu:4050
