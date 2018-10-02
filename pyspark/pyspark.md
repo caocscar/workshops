@@ -2,7 +2,7 @@
 
 ## Table of Contents
 - [Apache Spark Ecosystem](#apache-spark-ecosystem)
-- [Flux Hadoop Cluster](#flux-hadoop-cluster)
+- [UM Hadoop Cluster](#um-hadoop-cluster)
      - [Setting Python Version](#setting-python-version)
 - [PySpark Interactive Shell](#pyspark-interactive-shell)
      - [Exit Shell](#exit-interactive-shell)
@@ -60,8 +60,12 @@ Spark has API bindings to **Scala, Java, Python and R**. The official documentat
 
 The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.0/api/python/index.html.  We will mostly deal with the `pyspark.sql` module https://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html.
 
-## Flux Hadoop Cluster
-SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and 2FA.
+## UM Hadoop Cluster
+For Cavium  
+SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Cavium account and 2FA.
+
+For Flux Hadoop  
+SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and 2FA.
 
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
