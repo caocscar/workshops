@@ -125,7 +125,7 @@ We'll cover some basic stuff on RDD at the end.
 PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called *parquet*.
 
 ## Text Files
-Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information.
+Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information. A sample of the data can be seen [here](sample.csv).
 ```
 filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
 lines = sc.textFile(filename)
