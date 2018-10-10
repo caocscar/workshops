@@ -171,20 +171,23 @@ Parquet is a column-store data format in Hadoop. They consist of a set of files 
 folder = 'uniqname'
 df = sqlContext.read.parquet(folder)
 ```
+
 ### ORC Files
 ORC (Optimized Row Columnar) is a columnar data format in Hadoop. They consist of a set of files in a folder.
 ```
 folder = 'uniqname'
 df = sqlContext.read.orc(folder)
 ```
+**Note:** Take a moment to notice how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
+
 ## Writing Files
 Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
 
 File formats available for saving the DataFrame are:
-1. csv (really any delimiter)
-2. json
-3. parquet w/ snappy compression
-4. ORC w/ snappy compression
+1. parquet w/ snappy compression
+2. ORC w/ snappy compression
+3. json
+4. csv (really any delimiter)
 
 ### Parquet, ORC, JSON, CSV
 The file formats all have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
