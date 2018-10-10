@@ -186,21 +186,25 @@ File formats available for saving the DataFrame are:
 3. parquet w/ snappy compression
 4. ORC w/ snappy compression
 
-### CSV
+### Parquet, ORC, JSON, CSV
+The file formats all have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
 ```
 folder = 'uniqname'
-df.write.csv(folder, sep=',', header=True)
-```
-The result is a folder called `uniqname` that has multiple csv files within it using the comma delimiter (which is the default). The number of files should be the same as the number of partitions. You can check this number by using the method `df.rdd.getNumPartitions()`.
-
-### Parquet, ORC, JSON
-The other file formats have similar notation. I've added the `mode` method to `overwrite` the folder. You can also `append` the DataFrame to existing data. These formats will also have multiple files within it.
-```
 df.write.mode('overwrite').parquet(folder)
 df.write.mode('overwrite').orc(folder)
 df.write.mode('overwrite').json(folder)
+df.write.mode('overwrite').csv(folder, sep=',', header=True)
 ```
-**Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead.
+The result is a folder called `uniqname` that has multiple files within it. The number of files should be the same as the number of partitions. You can check this number by using the method `df.rdd.getNumPartitions()`.
+
+**Tip:** There is a `text` method also but I do NOT recommend using it. It can only handle a one column DataFrame of type string. Use the `csv` method instead or better yet `parquet`.
+
+**Tip:** Spark does NOT like it when you try to overwrite a folder that you read your data from. For example
+```
+alex = sqlContext.read.parquet('originalfolder')
+alex.write.mode('overwrite').parquet('originalfolder')
+```
+You will get a `java.io.FileNotFoundException: File does not exist:` error message when you try to do this.
 
 ## Setting Number of Partitions
 You can set your number of partitions during file input with the `textFile` method by providing an optional second argument (`minSplits`). By default, Spark creates one partition for each block of the file (blocks being 128MB by default in HDFS), but you can also ask for a higher number of partitions by passing a larger value. Note that you cannot have fewer partitions than blocks. If you specify fewer partitions than blocks, it will default to the number of blocks.
@@ -212,7 +216,7 @@ Recall that you can retrieve the number of partitions with the method
 You can use the `coalesce` method to return a new DataFrame that has exactly *N* partitions.
 ```
 N = 5
-df.coalesce(N).write.mode('overwrite').parquet(folder)
+df.coalesce(N).write.mode('overwrite').parquet('coalescent')
 ```
 The result is still the same folder but this time with *N* files.
 
