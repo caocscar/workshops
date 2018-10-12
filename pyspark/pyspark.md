@@ -84,7 +84,7 @@ The interactive shell is analogous to a python console. The following command st
 `pyspark --master yarn --queue workshop`
 
 The following line adds some custom settings (this will get you 56GB RAM).  
-`pyspark --master yarn --queue workshop --num-executors 10 --conf spark.ui.port=4050`
+`pyspark --master yarn --queue workshop --num-executors 5 --executor-cores 5 --conf spark.ui.port=4050`
 
 **Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.` This usually resolves itself after a few seconds. If not, try again at a later time.
 
