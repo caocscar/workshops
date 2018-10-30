@@ -178,7 +178,7 @@ ORC (Optimized Row Columnar) is a columnar data format in Hadoop. They consist o
 folder = 'uniqname'
 df = sqlContext.read.orc(folder)
 ```
-**Note:** Take a moment to notice how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
+**Tip:** Take a moment to notice how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
 
 ## Writing Files
 Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
