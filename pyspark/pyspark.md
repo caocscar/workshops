@@ -83,10 +83,10 @@ For Flux Hadoop (Python 3.6)
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
 `pyspark --master yarn --queue workshop`
 
-The following line adds some custom settings (this will get you 56GB RAM).  
-`pyspark --master yarn --queue workshop --num-executors 10 --conf spark.ui.port=4050`
+The following line adds some custom settings.  The 'XX' should be a number between 50 and 99.
+`pyspark --master yarn --queue workshop --num-executors 5 --executor-cores 5 --conf spark.ui.port=40XX`
 
-**Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.` This usually resolves itself after a few seconds. If not, try again at a later time.
+**Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 40XX. Attempting port 40YY.` This usually resolves itself after a few seconds. If not, try again at a later time.
 
 The interactive shell does not start with a clean slate. It already has several objects defined for you. 
 - `sc` is a SparkContext
@@ -125,10 +125,10 @@ We'll cover some basic stuff on RDD at the end.
 PySpark can create RDDs from any storage source supported by Hadoop. We'll work with text files and another format called *parquet*.
 
 ## Text Files
-Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information.
+Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information. A sample of the data can be seen [here](sample.csv).
 ```
 filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
-lines = sc.textFile(filename)
+lines = sc.textFile(filename, sc.defaultParallelism)
 ```
 This method is more powerful than that though. You can also use:
 - a directory `/alex/foldername`
@@ -178,7 +178,7 @@ ORC (Optimized Row Columnar) is a columnar data format in Hadoop. They consist o
 folder = 'uniqname'
 df = sqlContext.read.orc(folder)
 ```
-**Note:** Take a moment to notice how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
+**Tip:** Take a moment to notice how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
 
 ## Writing Files
 Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
