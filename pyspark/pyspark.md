@@ -513,7 +513,7 @@ conf = SparkConf().setAppName('Workshop Ex')
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
-filename = 'bsm_sm.txt'
+filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
 lines = sc.textFile(filename)
 columns = lines.map(lambda x: x.split(','))
 table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]), Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
@@ -524,7 +524,7 @@ folder = 'uniqname'
 df.write.mode('overwrite').orc(folder)
 ```
 Submit the Spark job through the command line like this.  
-`spark-submit --master yarn --num-executors 20 --executor-memory 5g --executor-cores 4 job.py`
+`spark-submit --master yarn --num-executors 5 --executor-memory 5g --executor-cores 4 job.py`
 
 # Exercises
 Re-create the following SQL queries using only DataFrame methods.
