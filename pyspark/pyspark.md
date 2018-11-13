@@ -74,7 +74,7 @@ Change Python version for PySpark to Python 3.X (instead of default Python 2.7)
 
 For Cavium (Python 3.4.8)  
 `export PYSPARK_PYTHON=/bin/python3`  
-`export PYSPARK_DRIVER_PYTHON=/bin/python3`
+`export PYSPARK_DRIVER_PYTHON=/bin/python3`  
 `export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0`
 
 For Flux Hadoop (Python 3.6)  
