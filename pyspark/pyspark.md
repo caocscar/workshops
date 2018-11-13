@@ -449,7 +449,7 @@ contingency.show()
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
 Suppose we want to round all applicable columns to 1 decimal place.  
-**Note:** DataFrame `int` columns are not affected by rounding). 
+**Note:** DataFrame `int` columns are not affected by rounding. 
 
 Here are several ways we can do it.
 1. `for` loop with `withColumn`
@@ -536,7 +536,7 @@ Re-create the following SQL queries using only DataFrame methods.
 In other words,
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
 2. Create a two column DataFrame that returns a unique set of device-trip ids (RxDevice, FileId) sorted by RxDevice in ascending order and then FileId in descending order.
-3. Create a two column DataFrame that lists RxDevices with more than 10 trips.
+3. Create a two column DataFrame that returns two columns (RxDevice, Trips) for RxDevices with more than 10 trips.
 
 # Spark UI
 This is a GUI to see active and completed Spark jobs.
