@@ -84,7 +84,7 @@ For Flux Hadoop (Python 3.6)
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
 `pyspark --master yarn --queue workshop`
 
-The following line adds some custom settings.  The 'XX' should be a number between 50 and 99.
+The following line adds some custom settings.  The 'XX' should be a number between 50 and 99.  
 `pyspark --master yarn --queue workshop --num-executors 5 --executor-cores 5 --conf spark.ui.port=40XX`
 
 **Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 40XX. Attempting port 40YY.` This usually resolves itself after a few seconds. If not, try again at a later time.
