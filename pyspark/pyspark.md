@@ -75,6 +75,7 @@ Change Python version for PySpark to Python 3.X (instead of default Python 2.7)
 For Cavium (Python 3.4.8)  
 `export PYSPARK_PYTHON=/bin/python3`  
 `export PYSPARK_DRIVER_PYTHON=/bin/python3`
+`export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0`
 
 For Flux Hadoop (Python 3.6)  
 `export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
@@ -93,7 +94,7 @@ The interactive shell does not start with a clean slate. It already has several 
 - `sqlContext` is a SQLContext object
 - `spark` is a SparkSession object
 
-You can check this by typing the variable names.  
+You can check this by typing the variable names.
 ```
 sc
 sqlContext
