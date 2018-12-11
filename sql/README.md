@@ -1,5 +1,6 @@
 # Introduction to SQL
 Here is the [WORKSHOP SLIDE DECK](http://nbviewer.jupyter.org/format/slides/github/caocscar/workshops/blob/master/sql/SQLslides.ipynb#/).
+We'll be using the [w3schools website](https://www.w3schools.com/sql/) to write queries. It also has a good SQL reference.
 
 ---
 # Miscellaneous Stuff
