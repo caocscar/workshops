@@ -21,7 +21,7 @@ More options available at https://nbconvert.readthedocs.io/en/latest/config_opti
 2. Enter url where the Jupyter Notebook file can be located.
 3. Make sure **nbviewer** is in *slide mode* and not *notebook mode* among the icons in the top right.
 
-## Reference
+## Contributors
 The slide deck was created originally by my student Maggie Orton
 https://github.com/margamo/intro-to-SQL
 
