@@ -1,7 +1,7 @@
 # Introduction to SQL
 Here is the [WORKSHOP SLIDE DECK](http://nbviewer.jupyter.org/format/slides/github/caocscar/workshops/blob/master/sql/SQLslides.ipynb#/).
 
-
+---
 # Miscellaneous Stuff
 
 ## Converting Jupyter Notebook into Slide Deck
