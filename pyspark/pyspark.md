@@ -543,3 +543,14 @@ This is a GUI to see active and completed Spark jobs.
 
 On campus Ports 4040-4150 open for spark UI
 http://cavium-thunderx.arc-ts.umich.edu:4050
+
+# PySpark with Jupyter Notebook
+1. Open a command prompt/terminal in Windows/Mac. You should have putty in your PATH (for Windows).  
+`putty.exe -ssh -L localhost:8889:localhost:8889 cavium-thunderx.arc-ts.umich.edu` (Windows)  
+`ssh -L localhost:8889:localhost:8889  cavium-thunderx.arc-ts.umich.edu` (Mac/Linux)
+2. This should open another ssh client for Cavium. Log in as normal.
+3. From the terminal (not inside the interactive shell)  
+`jupyter notebook --no-browser --port=8889`
+4. Copy/paste the URL (from your terminal where you launched jupyter notebook) into your browser. The URL should look something like this but with a different token.  
+`http://localhost:8889/?token=745f8234f6d0cf3b362404ba32ec7026cb6e5ea7cc960856`
+5. You should be connected.
