@@ -48,7 +48,7 @@
 https://databricks.com/spark/about
 
 ## Documentation
-The relevant Spark documentation can be found at https://spark.apache.org/docs/2.2.0/rdd-programming-guide.html
+The relevant Spark documentation can be found at https://spark.apache.org/docs/2.2.1/rdd-programming-guide.html
 
 ### Introduction Spark Overview
 Let's look at the *Overview* section. You should take away a couple of things from the Spark Overview:
@@ -58,7 +58,7 @@ Let's look at the *Overview* section. You should take away a couple of things fr
 ### APIs
 Spark has API bindings to **Scala, Java, Python and R**. The official documentation page shows code snippets for the first three languages (sorry, **R** users).
 
-The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.0/api/python/index.html.  We will mostly deal with the `pyspark.sql` module https://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html.
+The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.1/api/python/index.html.  We will mostly deal with the `pyspark.sql` module https://spark.apache.org/docs/2.2.1/api/python/pyspark.sql.html.
 
 ## UM Hadoop Cluster
 For Cavium  
@@ -72,7 +72,7 @@ SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. P
 ### Setting Python Version 
 Change Python version for PySpark to Python 3.X (instead of default Python 2.7) 
 
-For Cavium (Python 3.4.8)  
+For Cavium (Python 3.4.9)  
 `export PYSPARK_PYTHON=/bin/python3`  
 `export PYSPARK_DRIVER_PYTHON=/bin/python3`  
 `export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0`
@@ -182,7 +182,7 @@ df = sqlContext.read.orc(folder)
 **Tip:** Take a moment to notice how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
 
 ## Writing Files
-Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.0/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
+Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.1/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
 
 File formats available for saving the DataFrame are:
 1. parquet w/ snappy compression
