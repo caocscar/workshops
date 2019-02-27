@@ -545,6 +545,10 @@ On campus Ports 4040-4150 open for spark UI
 http://cavium-thunderx.arc-ts.umich.edu:4050
 
 # PySpark with Jupyter Notebook
+`export PYSPARK_PYTHON=/bin/python3`  
+`export PYSPARK_DRIVER_PYTHON=jupyter`  
+`export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0`  
+`export PYSPARK_DRIVER_PYTHON_OPTS='notebook --no-browser --port=8889'`
 1. Open a command prompt/terminal in Windows/Mac. You should have putty in your PATH (for Windows).  
 `putty.exe -ssh -L localhost:8889:localhost:8889 cavium-thunderx.arc-ts.umich.edu` (Windows)  
 `ssh -L localhost:8889:localhost:8889  cavium-thunderx.arc-ts.umich.edu` (Mac/Linux)
