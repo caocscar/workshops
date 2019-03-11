@@ -62,10 +62,10 @@ The Spark Python API documentation can be found at https://spark.apache.org/docs
 
 ## UM Hadoop Cluster
 For Cavium  
-SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Cavium account and 2FA.
+SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Cavium account and two-factor authentication.
 
 For Flux Hadoop  
-SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and 2FA.
+SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and two-factor authentication.
 
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
