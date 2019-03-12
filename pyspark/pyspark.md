@@ -38,6 +38,7 @@
 - [Running PySpark as a Script](#running-pyspark-as-a-script)
 - [Exercises](#exercises)
 - [Spark UI](#spark-ui)
+- [Spark Version](#spark-version)
 
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
@@ -502,8 +503,6 @@ There are a lot of methods available. A list of them are here http://spark.apach
 
 **Tip:** The Spark version on Flux Hadoop is updated every time maintenance is performed. When you look at the Spark documentation, make sure you are looking up docs for the same version (and not necessarily the latest version). 
 
-You can check the current version of Spark using `SparkContext.version` or `sc.version` OR if you are outside of the PySpark interactive shell `spark-shell --version`.
-
 ## Running PySpark as a Script
 If you don't run PySpark through the interactive shell but rather as a Python script. You will need some additional code at the top of your script. 
 
@@ -559,7 +558,10 @@ This is a GUI to see active and completed Spark jobs.
 On campus Ports 4040-4150 open for spark UI
 http://cavium-thunderx.arc-ts.umich.edu:4050
 
-# PySpark with Jupyter Notebook
+# Spark Version
+You can check the current version of Spark using `sc.version` OR if you are outside of the PySpark interactive shell `spark-shell --version`.
+
+# PySpark with Jupyter Notebook (Still Debugging)
 `export PYSPARK_PYTHON=/bin/python3`  
 `export PYSPARK_DRIVER_PYTHON=jupyter`  
 `export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0`  
