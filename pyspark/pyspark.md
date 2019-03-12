@@ -128,7 +128,7 @@ PySpark can create RDDs from any storage source supported by Hadoop. We'll work 
 ## Text Files
 Use the `textFile` method to read in a text file into a RDD. The dataset we'll be using is from connected vehicles transmitting their information. A sample of the data can be seen [here](sample.csv).
 ```
-filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
+filename = '/var/cscar-spark-workshop/bsm_sm.txt' # workshop directory
 lines = sc.textFile(filename, sc.defaultParallelism)
 ```
 This method is more powerful than that though. You can also use:
@@ -151,7 +151,6 @@ table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=
 Create a DataFrame from RDD of `Row` objects and view using the `show` method.
 ```
 bsm = sqlContext.createDataFrame(table)
-bsm
 bsm.show(5)
 ```
 OR
@@ -179,7 +178,7 @@ ORC (Optimized Row Columnar) is a columnar data format in Hadoop. They consist o
 folder = 'uniqname'
 df = sqlContext.read.orc(folder)
 ```
-**Tip:** Take a moment to notice how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
+**Tip:** Take a moment to compare how much faster the computation for `df.count()` is on the same dataframe if you read it in from a parquet/orc file format instead of a csv file.
 
 ## Writing Files
 Documentation for the `df.write` method is located at http://spark.apache.org/docs/2.2.1/api/python/pyspark.sql.html#pyspark.sql.DataFrameWriter.csv
@@ -211,7 +210,7 @@ alex.write.mode('overwrite').parquet('originalfolder')
 You will get a `java.io.FileNotFoundException: File does not exist:` error message when you try to do this.
 
 ## Setting Number of Partitions
-You can set your number of partitions during file input with the `textFile` method by providing an optional second argument (`minSplits`). By default, Spark creates one partition for each block of the file (blocks being 128MB by default in HDFS), but you can also ask for a higher number of partitions by passing a larger value. Note that you cannot have fewer partitions than blocks. If you specify fewer partitions than blocks, it will default to the number of blocks.
+You can set your number of partitions during file input with the `textFile` method by providing an optional second argument (`minSplits`). We did this earlier by specifying `sc.defaultParallelism` as our argument. By default, Spark creates one partition for each block of the file (blocks being 128MB by default in HDFS), but you can also ask for a higher number of partitions by passing a larger value. Note that you can not have fewer partitions than blocks. If you specify fewer partitions than blocks, it will default to the number of blocks.
 
 ### Reducing Partitions
 Recall that you can retrieve the number of partitions with the method  
@@ -247,6 +246,13 @@ Spark SQL is a Spark module for structured data processing.
 The latest SQL programming guide can be found at https://spark.apache.org/docs/latest/sql-programming-guide.html.  
 You can perform SQL queries on Spark DataFrames after you register them as a table.
 
+Before we move forward, let's make sure we are working with the large version of the file
+```
+folder = '/var/cscar-spark-workshop-july-2018/large'
+df = sqlContext.read.parquet(folder)
+df.count() # 155785661
+```
+
 ### Set up a Temp Table
 To create a temporary table for SQL queries, you can use either the `registerTempTable` or `sqlContext.registerDataFrameAsTable` method.
 
@@ -257,7 +263,7 @@ Then you can start querying the table like a regular database using SQL. BTW, I 
 ```
 records = sqlContext.sql('SELECT COUNT(*) as Rows FROM Bsm')
 trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')
-driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')
+driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 60')
 area = sqlContext.sql('SELECT * FROM Bsm WHERE Latitude BETWEEN 42.4 and 42.5 AND Longitude BETWEEN -83.6 and -83.5')
 ```
 The result is always a DataFrame.  
@@ -405,22 +411,31 @@ So when you are merging on columns that have some matching and non-matching name
 
 ## Grouping Data
 To group by column values, use the `groupBy` method.
-```
+```python
 counts = df.groupBy(['RxDevice','FileId']).count()
 counts.show()
 ```
 ## Sorting Data
 To sort by columns, use the `orderBy` method or its alias `sort`.
-```
+```python
 counts_sorted = counts.orderBy(["count", "RxDevice"], ascending=[True, False])
 counts_sorted.show()
 ```
 ## Converting to DateTime Format
 `Gentime` is in units of microseconds so we divide by a million to convert to seconds. The epoch for `Gentime` is in 2004 instead of 1970 so we add the necessary seconds to account for this.
+
+`from_unixtime` will return a date as a string type
 ```python
 from pyspark.sql.functions import from_unixtime
 
 timedf = df.select('Gentime', (from_unixtime(df['Gentime'] / 1000000 + 1072929024).alias('DateTime')) )
+timedf.show()
+```
+`to_timestamp` will return a date as a timestamp type
+```python
+from pyspark.sql.functions import to_timestamp
+
+timedf = df.select('Gentime', to_timestamp(from_unixtime(df['Gentime'] / 1000000 + 1072929024),'yyyy-MM-dd HH:mm:ss').alias('DateTime'))
 timedf.show()
 ```
 ## Binning Data
@@ -514,7 +529,7 @@ conf = SparkConf().setAppName('Workshop Ex')
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
-filename = '/var/cscar-spark-workshop-july-2018/bsm_sm.txt' # workshop directory
+filename = '/var/cscar-spark-workshop/bsm_sm.txt' # workshop directory
 lines = sc.textFile(filename)
 columns = lines.map(lambda x: x.split(','))
 table = columns.map(lambda x: Row(RxDevice=int(x[0]), FileId=int(x[1]), Gentime=int(x[3]), Latitude=float(x[7]), Longitude=float(x[8]), Elevation=float(x[9]), Speed=float(x[10]), Heading=float(x[11]), Yawrate=float(x[15])) )
@@ -531,12 +546,12 @@ Submit the Spark job through the command line like this.
 Re-create the following SQL queries using only DataFrame methods.
 1. `area = sqlContext.sql('SELECT COUNT(*) as pts FROM Bsm WHERE Latitude BETWEEN 43 and 44 AND Longitude BETWEEN -84 and -83')`
 2. `trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')`
-3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 10')`
+3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 60')`
 
 In other words,
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
 2. Create a two column DataFrame that returns a unique set of device-trip ids (RxDevice, FileId) sorted by RxDevice in ascending order and then FileId in descending order.
-3. Create a two column DataFrame that returns two columns (RxDevice, Trips) for RxDevices with more than 10 trips.
+3. Create a two column DataFrame that returns two columns (RxDevice, Trips) for RxDevices with more than 60 trips.
 
 # Spark UI
 This is a GUI to see active and completed Spark jobs.
