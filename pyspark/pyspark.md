@@ -249,7 +249,7 @@ You can perform SQL queries on Spark DataFrames after you register them as a tab
 
 Before we move forward, let's make sure we are working with the large version of the file
 ```
-folder = '/var/cscar-spark-workshop-july-2018/large'
+folder = '/var/cscar-spark-workshop/large'
 df = sqlContext.read.parquet(folder)
 df.count() # 155785661
 ```
@@ -539,7 +539,7 @@ folder = 'uniqname'
 df.write.mode('overwrite').orc(folder)
 ```
 Submit the Spark job through the command line like this.  
-`spark-submit --master yarn --num-executors 5 --executor-memory 5g --executor-cores 4 job.py`
+`spark-submit --master yarn --queue workshop --num-executors 5 --executor-memory 5g --executor-cores 4 job.py`
 
 # Exercises
 Re-create the following SQL queries using only DataFrame methods.
