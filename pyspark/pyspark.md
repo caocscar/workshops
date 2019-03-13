@@ -542,12 +542,6 @@ Submit the Spark job through the command line like this.
 `spark-submit --master yarn --queue workshop --num-executors 5 --executor-memory 5g --executor-cores 4 job.py`
 
 # Exercises
-Re-create the following SQL queries using only DataFrame methods.
-1. `area = sqlContext.sql('SELECT COUNT(*) as pts FROM Bsm WHERE Latitude BETWEEN 43 and 44 AND Longitude BETWEEN -84 and -83')`
-2. `trips = sqlContext.sql('SELECT DISTINCT RxDevice, FileId FROM Bsm ORDER BY RxDevice, FileId DESC')`
-3. `driver_trips = sqlContext.sql('SELECT RxDevice, COUNT(DISTINCT FileId) as Trips FROM Bsm GROUP BY RxDevice HAVING Trips > 60')`
-
-In other words,
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
 2. Create a two column DataFrame that returns a unique set of device-trip ids (RxDevice, FileId) sorted by RxDevice in ascending order and then FileId in descending order.
 3. Create a two column DataFrame that returns two columns (RxDevice, Trips) for RxDevices with more than 60 trips.
