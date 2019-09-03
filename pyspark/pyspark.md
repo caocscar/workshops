@@ -1,44 +1,55 @@
 # PySpark and SparkSQL
 
 ## Table of Contents
-- [Apache Spark Ecosystem](#apache-spark-ecosystem)
-- [UM Hadoop Cluster](#um-hadoop-cluster)
-     - [Setting Python Version](#setting-python-version)
+- [PySpark and SparkSQL](#pyspark-and-sparksql)
+  - [Table of Contents](#table-of-contents)
+  - [Apache Spark Ecosystem](#apache-spark-ecosystem)
+  - [Documentation](#documentation)
+    - [Introduction Spark Overview](#introduction-spark-overview)
+    - [APIs](#apis)
+  - [UM Hadoop Cluster](#um-hadoop-cluster)
 - [PySpark Interactive Shell](#pyspark-interactive-shell)
-     - [Exit Shell](#exit-interactive-shell)
+  - [Exit Interactive Shell](#exit-interactive-shell)
+  - [Data](#data)
 - [PySpark Cheat Sheets](#pyspark-cheat-sheets)
-- [File I/O](#file-io)
-     - [Reading Files](#reading-files)
-     - [Writing Files](#writing-files)
-     - [Setting Number of Partitions](#setting-number-of-partitions)
-     - [Persistence](#persistence)
+- [File IO](#file-io)
+  - [Reading Files](#reading-files)
+  - [Text Files](#text-files)
+    - [Parquet Files](#parquet-files)
+    - [ORC Files](#orc-files)
+  - [Writing Files](#writing-files)
+    - [Parquet, ORC, JSON, CSV](#parquet-orc-json-csv)
+  - [Setting Number of Partitions](#setting-number-of-partitions)
+    - [Reducing Partitions](#reducing-partitions)
+    - [`coalesce` vs `repartition`](#coalesce-vs-repartition)
+  - [Persistence](#persistence)
 - [Spark SQL](#spark-sql)
-     - [Set up a Temp Table](#set-up-a-temp-table)
-     - [SQL Queries](#sql-queries)
- - [Spark DataFrames](#spark-dataframes)
-     - [Row Count](#row-count)
-     - [Column Info](#column-info)
-     - [Selecting Rows](#selecting-rows)
-     - [Selecting Columns](#selecting-columns)
-     - [Descriptive Statistics](#descriptive-statistics)
-     - [Renaming Columns](#renaming-columns)
-     - [Adding Columns](#adding-columns)
-     - [Deleting Columns](#deleting-columns)
-     - [Applying a Function to a DataFrame](#applying-a-function-to-a-dataframe)
-     - [Replacing Values](#replacing-values)
-     - [Dropping Duplicates](#dropping-duplicates)
-     - [Merging Data](#merging-data)
-     - [Grouping Data](#grouping-data)
-     - [Sorting Data](#sorting-data)
-     - [Persistence](#persistence)
-     - [Converting to DateTime Format](#converting-to-datetime-format)
-     - [Binning Data](#binning-data)
-- [Physical Plan](#physical-plan)
-- [Miscellaneous Methods](#miscellaneous-methods)   
-- [Running PySpark as a Script](#running-pyspark-as-a-script)
+    - [Set up a Temp Table](#set-up-a-temp-table)
+    - [SQL Queries](#sql-queries)
+- [Spark DataFrames](#spark-dataframes)
+  - [Row Count](#row-count)
+  - [Column Info](#column-info)
+  - [Selecting Rows](#selecting-rows)
+  - [Selecting Columns](#selecting-columns)
+  - [Descriptive Statistics](#descriptive-statistics)
+  - [Renaming Columns](#renaming-columns)
+  - [Adding Columns](#adding-columns)
+  - [Deleting Columns](#deleting-columns)
+  - [Applying A Function to a Dataframe](#applying-a-function-to-a-dataframe)
+  - [Replacing Values](#replacing-values)
+  - [Dropping Duplicates](#dropping-duplicates)
+  - [Merging Data](#merging-data)
+  - [Grouping Data](#grouping-data)
+  - [Sorting Data](#sorting-data)
+  - [Converting to DateTime Format](#converting-to-datetime-format)
+  - [Binning Data](#binning-data)
+  - [Physical Plan](#physical-plan)
+  - [Miscellaneous Methods](#miscellaneous-methods)
+  - [Running PySpark as a Script](#running-pyspark-as-a-script)
 - [Exercises](#exercises)
 - [Spark UI](#spark-ui)
 - [Spark Version](#spark-version)
+- [Using Jupyter Notebook with PySpark](#using-jupyter-notebook-with-pyspark)
 
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
@@ -69,17 +80,6 @@ For Flux Hadoop
 SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and two-factor authentication.
 
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
-
-### Setting Python Version 
-Change Python version for PySpark to Python 3.X (instead of default Python 2.7) 
-
-For Cavium (Python 3.4.9)  
-`export PYSPARK_PYTHON=/bin/python3`  
-`export PYSPARK_DRIVER_PYTHON=/bin/python3`  
-`export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0`
-
-For Flux Hadoop (Python 3.6)  
-`export PYSPARK_PYTHON=/sw/dsi/centos7/x86-64/Anaconda3-5.0.1/bin/python`
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
@@ -555,17 +555,22 @@ http://cavium-thunderx.arc-ts.umich.edu:4050
 # Spark Version
 You can check the current version of Spark using `sc.version` OR if you are outside of the PySpark interactive shell `spark-shell --version`.
 
-# PySpark with Jupyter Notebook (Still Debugging)
-`export PYSPARK_PYTHON=/bin/python3`  
-`export PYSPARK_DRIVER_PYTHON=jupyter`  
-`export SPARK_YARN_USER_ENV=PYTHONHASHSEED=0`  
-`export PYSPARK_DRIVER_PYTHON_OPTS='notebook --no-browser --port=8889'`
-1. Open a command prompt/terminal in Windows/Mac. You should have putty in your PATH (for Windows).  
+# Using Jupyter Notebook with PySpark
+**Note**: Jupyter notebooks do not run on the Cavium cluster. They currently only run on the login node. This means only the login node's resources (i.e. less resources than the cluster) are available to the Jupyter notebook.
+
+1. Open a command prompt/terminal in Windows/Mac. You should have PuTTY in your PATH (for Windows).  Port 8889 is arbitrarily chosen.  The first localhost port is for your local machine. The second localhost port is for Cavium. They do not necessarily have to be the same.  
 `putty.exe -ssh -L localhost:8889:localhost:8889 cavium-thunderx.arc-ts.umich.edu` (Windows)  
-`ssh -L localhost:8889:localhost:8889  cavium-thunderx.arc-ts.umich.edu` (Mac/Linux)
-2. This should open another ssh client for Cavium. Log in as normal.
-3. From the terminal (not inside the interactive shell)  
-`jupyter notebook --no-browser --port=8889`
-4. Copy/paste the URL (from your terminal where you launched jupyter notebook) into your browser. The URL should look something like this but with a different token.  
-`http://localhost:8889/?token=745f8234f6d0cf3b362404ba32ec7026cb6e5ea7cc960856`
+`ssh -L localhost:8889:localhost:8889 cavium-thunderx.arc-ts.umich.edu` (Mac/Linux)
+2. This should open a ssh client for Cavium. Log in as usual.
+3. From the Cavium terminal, type the following (replace XXXX with number between 4050 and 4099):
+```bash
+export PYSPARK_PYTHON=/bin/python3  # set Python to 3.7; default is 2.7
+export PYSPARK_DRIVER_PYTHON=jupyter  
+export PYSPARK_DRIVER_PYTHON_OPTS='notebook --no-browser --port=8889'  # same as second port listed above
+pyspark --master yarn --queue workshop --num-executors 5 --executor-cores 5 --conf spark.ui.port=XXXX
+```
+4. Copy/paste the URL (from your terminal where you launched jupyter notebook) into your browser. The URL should look something like this but with a different token.
+http://localhost:8889/?token=745f8234f6d0cf3b362404ba32ec7026cb6e5ea7cc960856  
+If the first localhost port is different from the second, then change the url to match the first port number in order for Jupyter notebook to show up.
+
 5. You should be connected.
