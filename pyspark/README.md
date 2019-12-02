@@ -1,5 +1,10 @@
 # SparkSQL and DataFrames with PySpark
-`pyspark.md` contains the markdown material for the PySpark workshop
+[pyspark.md](pyspark.md) contains the markdown material for the PySpark workshop
+
+## Using PySpark with the Twitter Decahose dataset on Cavium
+The github repo is located at https://github.com/caocscar/twitter-decahose-pyspark
+
+**Note**: You need to get permission to access the dataset first. More information available at: https://midas.umich.edu/research-datasets/
 
 ## Cheat Sheets
 My github Hadoop cheat sheet  
