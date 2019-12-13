@@ -1,0 +1,63 @@
+/* .chart {
+  clip-path: url(#clip); 
+} */
+
+.bar {
+  fill: orange;
+}
+
+.x.axis text {
+  font: 15px sans-serif;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: '#000';
+  shape-rendering: crispEdges;
+}
+
+.label {
+  text-anchor: middle;
+  font: 20px helvetica;
+}
+
+#date {
+  text-anchor: start;
+  font: 20px helvetica;  
+}
+
+.grid line {
+  stroke: lightgrey;
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+.team {
+  fill: black;
+  font: 14px sans-serif;
+  text-anchor: end;
+  font-weight: 600;
+}
+
+.barlabel{
+  fill: black;
+  font: 14px sans-serif;
+  text-anchor: left;
+  font-weight: 600;
+}
+
+.logo {
+  fill: black;
+  font: 14px sans-serif;
+  text-anchor: middle;
+}
+
+.divisions {
+  stroke: black;
+  stroke-width: 2;
+  stroke-dasharray: 12;
+}
