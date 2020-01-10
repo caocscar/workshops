@@ -18,7 +18,7 @@ This is a list of some (but not all) CSCAR Workshops I've done (in no particular
 - [Web Scraping with Python](webscraping)
   - [Scraping HTML](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/webscraping_in_python.ipynb)
   - [Google and YouTube APIs](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/Google.ipynb) 
-  - [Twitter APIs](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/Twitter.ipynb)
+  - [Twitter APIs](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/Twitter.ipynb) (you need to set up a [developer account first](https://github.com/caocscar/twitter-create-developer-account))
 - [Extracting Data from PDFs](pdf-data-extraction)
 - [Flask](flask)
 - [Introduction to PyTorch](pytorch)
