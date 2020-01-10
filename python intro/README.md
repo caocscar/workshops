@@ -1,6 +1,6 @@
 # Introduction to Python
 
-There are no notes for this workshop. I do it freestyle using a project-based learning approach and provide attendees with a beginner's cheat sheet.
+There are no notes for this 6 hour workshop. I do it freestyle using a project-based learning approach and provide attendees with a beginner's cheat sheet.
 
 Exercises  
 https://goo.gl/bw1J9L
@@ -17,8 +17,8 @@ https://wiki.python.org/moin/BeginnersGuide/Programmers
 Here is a link for learning Python for non-programmers  
 https://wiki.python.org/moin/BeginnersGuide/NonProgrammers
 
-## Python Topics
-#### Python Functions
+## Python Topics Covered
+### Python Functions
 ```
 input
 type
@@ -32,7 +32,8 @@ id
 time
 ```
 
-#### Data Types
+### Data Types
+```
 int  
 float  
 string  
@@ -40,8 +41,9 @@ list
 tuple  
 dictionary  
 set  
+```
 
-#### Control Flow
+### Control Flow
 ```
 if elif else
 for
@@ -51,7 +53,7 @@ break
 pass
 ```
 
-#### File I/O
+### File I/O
 ```
 with
 open
@@ -60,7 +62,7 @@ read
 readlines
 ```
 
-#### Miscelleaneous
+### Miscelleaneous
 comments  
 list comprehension  
 casting variables  

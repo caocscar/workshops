@@ -1,10 +1,10 @@
 # CSCAR Workshops
 This is a list of some CSCAR Workshops contained in this repository.
-- Introduction to Matlab
-- Introduction to Python
-- Pandas
-- Introduction to SQL
-- SQLite
+- [Introduction to Matlab](matlab)
+- [Introduction to Python](python-intro)
+- [Pandas](pandas)
+- [Introduction to SQL](sql)
+- [SQLite](sqlite)
 - Regular Expressions
 - Natural Language Processing with Python
 - Network Analysis with igraph
