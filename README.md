@@ -12,12 +12,11 @@ This is a list of some CSCAR Workshops contained in this repository.
 - [GeoPandas](geopandas)
 - [Geospatial Analysis with Python](geospatial-analysis)
 - [Working with Geographical Data and Parallel Computing on Flux](dotmap)
-- Thematic Maps with Python
-- Datashader
-- Google Fusion Tables
-- Web Scraping with Python
-  - HTML
-  - Google APIs 
-  - YouTube API
-  - Twitter APIs
-- Extracting Data from PDFs
+- [Thematic Maps with Python](thematic-maps)
+- [Datashader](datashader)
+- [Google Fusion Tables](fusion-tables) (this product is no longer available)
+- [Web Scraping with Python](webscraping)
+  - [Scraping HTML](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/webscraping_in_python.ipynb)
+  - [Google and YouTube APIs](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/Google.ipynb) 
+  - [Twitter APIs](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/Twitter.ipynb)
+- [Extracting Data from PDFs](pdf-data-extraction)
