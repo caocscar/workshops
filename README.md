@@ -5,13 +5,13 @@ This is a list of some CSCAR Workshops contained in this repository.
 - [Pandas](pandas)
 - [Introduction to SQL](sql)
 - [SQLite](sqlite)
-- Regular Expressions
-- Natural Language Processing with Python
+- [Regular Expressions](regex)
+- [Natural Language Processing with Python](natural-language-processing)
 - Network Analysis with igraph
-- PySpark and SparkSQL
-- GeoPandas
-- Geospatial Analysis with Python
-- Working with Geographical Data and Parallel Computing on Flux
+- [SparkSQL and DataFrames with PySpark](pyspark)
+- [GeoPandas](geopandas)
+- [Geospatial Analysis with Python](geospatial-analysis)
+- [Working with Geographical Data and Parallel Computing on Flux](dotmap)
 - Thematic Maps with Python
 - Datashader
 - Google Fusion Tables
