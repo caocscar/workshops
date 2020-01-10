@@ -1,5 +1,5 @@
 # CSCAR Workshops
-This is a list of some CSCAR Workshops contained in this repository.
+This is a list of some (but not all) CSCAR Workshops I've done (in no particular order).
 - [Introduction to Matlab](matlab)
 - [Introduction to Python](python-intro)
 - [Pandas](pandas)
@@ -7,7 +7,7 @@ This is a list of some CSCAR Workshops contained in this repository.
 - [SQLite](sqlite)
 - [Regular Expressions](regex)
 - [Natural Language Processing with Python](natural-language-processing)
-- Network Analysis with igraph
+- [Network Analysis with igraph](igraph)
 - [SparkSQL and DataFrames with PySpark](pyspark)
 - [GeoPandas](geopandas)
 - [Geospatial Analysis with Python](geospatial-analysis)
@@ -20,3 +20,7 @@ This is a list of some CSCAR Workshops contained in this repository.
   - [Google and YouTube APIs](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/Google.ipynb) 
   - [Twitter APIs](https://nbviewer.jupyter.org/github/caocscar/workshops/blob/master/webscraping/Twitter.ipynb)
 - [Extracting Data from PDFs](pdf-data-extraction)
+- [Flask](flask)
+- [Introduction to PyTorch](pytorch)
+- [Introduction to D3.js](D3)
+  - explains code used to generate data viz located at https://d3-examples-caocscar.onrender.com/

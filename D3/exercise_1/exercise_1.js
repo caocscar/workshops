@@ -37,25 +37,21 @@ var data = [{'team':'Boston','value':100},
         {'team':'Atlanta','value':75}, 
         {'team':'Chicago','value':30}]
 
-
 // scale the range of the data in the domains 
 x.domain([0, d3.max(data, d => d.value)])
 y.domain(data.map(d => d.team));
 
-
 // append the rectangles for the bar chart
 var bar = svg.selectAll(".bar")
-    .data(data)
-    .join("g")
-        .attr("class","bar")
-
-
+  .data(data)
+  .join("g")
+    .attr("class","bar")
 
 var rect = bar.append('rect')
     .attr("width", d => x(d.value))
     .attr("y", d => y(d.team))
     .attr("height", y.bandwidth())
-
+    .attr("x", 0)
     .style('fill', d => d3.interpolatePurples(d.value/100))
 
 // add the x Axis
