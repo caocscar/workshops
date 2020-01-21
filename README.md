@@ -4,6 +4,7 @@ This is a list of some (but not all) CSCAR Workshops I've done (in no particular
 - [Introduction to Python](python-intro)
 - [Pandas](pandas)
 - [Introduction to SQL](sql)
+- [Intermediate SQL](sql-intermediate)
 - [SQLite](sqlite)
 - [Regular Expressions](regex)
 - [Natural Language Processing with Python](NLP)
