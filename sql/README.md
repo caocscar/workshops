@@ -23,8 +23,8 @@ More options available at https://nbconvert.readthedocs.io/en/latest/config_opti
 3. Make sure **nbviewer** is in *slide mode* and not *notebook mode* among the icons in the top right.
 
 ## Contributors
-The slide deck was created originally by my student Maggie Orton
-https://github.com/margamo/intro-to-SQL
+The slide deck was created originally by my student [Maggie Orton](https://github.com/margamo/intro-to-SQL) on March 14, 2017.
 
-And then modified by my student Kaitlin Cornwell
-https://github.com/kaitcorn/intro-to-SQL
+And modified by my student [Kaitlin Cornwell](https://github.com/kaitcorn/intro-to-SQL) on March 16, 2018.
+
+And further modified by my student [Jessica Zhang](https://github.com/jezzhang/sqlworkshop) on January 31, 2020.
