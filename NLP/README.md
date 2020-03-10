@@ -7,6 +7,6 @@ This 2.5 hr workshop covers the following Python packages:
 - `pyLDAvis` (visualization)
 - `textblob` (sentiment analysis)
 
-My student, Ellen Paquet, prepared the workshop materials and it is located at https://github.com/epmarie/IntroNLP
+My student, Ellen Paquet, prepared the workshop materials. Her original repo is located at https://github.com/epmarie/IntroNLP
 
 
