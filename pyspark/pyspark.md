@@ -45,6 +45,7 @@
   - [Binning Data](#binning-data)
   - [Physical Plan](#physical-plan)
   - [Miscellaneous Methods](#miscellaneous-methods)
+  - [Listing files in HDFS to iterate](#listing-files-in-hdfs-to-iterate)
   - [Running PySpark as a Script](#running-pyspark-as-a-script)
 - [Exercises](#exercises)
 - [Spark UI](#spark-ui)
@@ -502,6 +503,25 @@ So the takeaway is, sometime you don't have to worry about optimizing code becau
 There are a lot of methods available. A list of them are here http://spark.apache.org/docs/latest/api/python/pyspark.sql.html
 
 **Tip:** The Spark version on Flux Hadoop is updated every time maintenance is performed. When you look at the Spark documentation, make sure you are looking up docs for the same version (and not necessarily the latest version). 
+
+## Listing files in HDFS to iterate
+If you want to get a list of files on HDFS, here's one example to list all the files from Jan 2020.
+```python
+import subprocess
+import re
+
+cmd = 'hdfs dfs -ls /data/twitter/decahose/2020/decahose.2020-01*'
+files = subprocess.check_output(cmd, shell=True)
+flist = str(files).strip().split('\\n')
+regex = re.compile('decahose\.2020.+\.bz2')
+filelist = []
+for x in flist:
+    if 'decahose' not in x: continue
+    match = re.search(regex,x)
+    filelist.append(match.group(0))
+print(len(filelist))
+```
+We expect there to be 62 files but we see 60 files. Closer inspection reveals the 28th is missing data.
 
 ## Running PySpark as a Script
 If you don't run PySpark through the interactive shell but rather as a Python script. You will need some additional code at the top of your script. 
