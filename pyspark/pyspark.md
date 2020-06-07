@@ -26,6 +26,7 @@
 - [Spark SQL](#spark-sql)
     - [Set up a Temp Table](#set-up-a-temp-table)
     - [SQL Queries](#sql-queries)
+    - [Drop a Temp Table](#drop-a-temp-table)
 - [Spark DataFrames](#spark-dataframes)
   - [Row Count](#row-count)
   - [Column Info](#column-info)
@@ -276,6 +277,9 @@ trips.show() # or trips.persist().show()
 driver_trips.show() # or driver_trips.persist().show()
 area.show() # or area.persist().show()
 ```
+
+### Drop a Temp Table
+To drop a temporary table after creation, use `spark.catalog.dropTempView('df')`
 
 # Spark DataFrames
 If you are familiar with **pandas** or **R** DataFrames, you can alternatively forget about SQL and just use the DataFrame equivalent methods. A DataFrame is equivalent to a relational table in Spark SQL.
