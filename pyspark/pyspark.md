@@ -277,9 +277,14 @@ trips.show() # or trips.persist().show()
 driver_trips.show() # or driver_trips.persist().show()
 area.show() # or area.persist().show()
 ```
+To extract the values from the resulting dataframe, use the `collect` method to convert to a list of Rows like so:
+```
+rowlist = trips.collect()
+value = rowlist[1]['RxDevice'] # specify row, column
+```
 
 ### Drop a Temp Table
-To drop a temporary table after creation, use `spark.catalog.dropTempView('df')`
+To drop a temporary table after creation, use the `dropTempView` method and specify the name of the temp table `spark.catalog.dropTempView('Bsm')`
 
 # Spark DataFrames
 If you are familiar with **pandas** or **R** DataFrames, you can alternatively forget about SQL and just use the DataFrame equivalent methods. A DataFrame is equivalent to a relational table in Spark SQL.
@@ -516,16 +521,18 @@ import re
 
 cmd = 'hdfs dfs -ls /data/twitter/decahose/2020/decahose.2020-01*'
 files = subprocess.check_output(cmd, shell=True)
-flist = str(files).strip().split('\\n')
+files = files.decode('utf-8')
+flist = files.split('\n')
 regex = re.compile('decahose\.2020.+\.bz2')
 filelist = []
 for x in flist:
     if 'decahose' not in x: continue
     match = re.search(regex,x)
-    filelist.append(match.group(0))
-print(len(filelist))
+    filelist.append(match.group(0) if match else print(x))
+
+print('folders: {}'.format(len(folderlist)))
 ```
-We expect there to be 62 files but we see 60 files. Closer inspection reveals the 28th is missing data.
+We expect there to be 62 files (two per day) but we see 60 files. Closer inspection reveals Jan 28th is missing data.
 
 ## Running PySpark as a Script
 If you don't run PySpark through the interactive shell but rather as a Python script. You will need some additional code at the top of your script. 
