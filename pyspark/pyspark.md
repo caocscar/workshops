@@ -44,6 +44,7 @@
   - [Sorting Data](#sorting-data)
   - [Converting to DateTime Format](#converting-to-datetime-format)
   - [Binning Data](#binning-data)
+  - [Adding File Source Column](#adding-file-source-column)
   - [Physical Plan](#physical-plan)
   - [Miscellaneous Methods](#miscellaneous-methods)
   - [Listing files in HDFS to iterate](#listing-files-in-hdfs-to-iterate)
@@ -449,6 +450,24 @@ from pyspark.sql.functions import to_timestamp
 timedf = df.select('Gentime', to_timestamp(from_unixtime(df['Gentime'] / 1000000 + 1072929024),'yyyy-MM-dd HH:mm:ss').alias('DateTime'))
 timedf.show()
 ```
+
+`year`, `month`, `dayofmonth` are some of the functions available to extract specific time attributes.
+```python
+from pyspark.sql.functions import year, month, dayofmonth
+
+timedf = timedf.withColumn('year', year('EST'))
+timedf = timedf.withColumn('month', month('EST'))
+timedf = timedf.withColumn('day', dayofmonth('EST'))
+```
+
+`from_utc_timestamp` can be used to convert to a specific timezone besides UTC. `year`, `month`, `dayofmonth` are some of the functions available to extract specific time attributes.
+```python
+from pyspark.sql.functions import from_utc_timestamp
+
+timedf = timedf.withColumn('GentimeEST', from_utc_timestamp('tiempo', 'America/New_York'))
+```
+Reference for datetime format: https://docs.oracle.com/javase/tutorial/i18n/format/simpleDateFormat.html
+
 ## Binning Data
 The Bucketizer function will bin your continuous data into ordinal data. 
 ```python
@@ -472,6 +491,15 @@ dfbins = dfbins.withColumn('constant', lit(77) )
 contingency = dfbins.crosstab('bins','constant')
 contingency.show()
 ```
+
+## Adding File Source Column
+If you want to add the file source for each row when you read in several files at once, you can use the `input_file_name` function
+```python
+from pyspark.sql.functions import input_file_name
+
+df.withColumn('filename', input_file_name())
+```
+
 ## Physical Plan
 You can use the `explain` method to look at the plan PySpark has made. Different sets of code can result in the same plan.
 Suppose we want to round all applicable columns to 1 decimal place.  
