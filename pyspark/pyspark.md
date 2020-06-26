@@ -86,12 +86,12 @@ SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. P
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
-`pyspark --master yarn --queue workshop`
+`pyspark --master yarn --queue default`
 
-The following line adds some custom settings.  The 'XX' should be a number between 50 and 99.  
-`pyspark --master yarn --queue workshop --num-executors 5 --executor-cores 5 --conf spark.ui.port=40XX`
+The following line adds some custom settings.  The 'XXXX' should be a number between 4040 and 4150.  
+`pyspark --master yarn --queue default --num-executors 5 --executor-cores 5 --conf spark.ui.port=XXXX`
 
-**Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 40XX. Attempting port 40YY.` This usually resolves itself after a few seconds. If not, try again at a later time.
+**Note:** You might get a warning message that looks like `WARN Utils: Service 'SparkUI' could not bind on port 4XXX. Attempting port 4YYY.` This usually resolves itself after a few seconds. If not, try again at a later time.
 
 The interactive shell does not start with a clean slate. It already has several objects defined for you. 
 - `sc` is a SparkContext
@@ -626,7 +626,7 @@ You can check the current version of Spark using `sc.version` OR if you are outs
 export PYSPARK_PYTHON=/bin/python3  # set Python to 3.4; default is 2.7
 export PYSPARK_DRIVER_PYTHON=jupyter  
 export PYSPARK_DRIVER_PYTHON_OPTS='notebook --no-browser --port=8889'  # same as second port listed above
-pyspark --master yarn --queue workshop --num-executors 5 --executor-memory 1g --conf spark.ui.port=XXXX
+pyspark --master yarn --queue default --num-executors 5 --executor-memory 1g --conf spark.ui.port=XXXX
 ```
 4. Copy/paste the URL (from your terminal where you launched jupyter notebook) into your browser. The URL should look something like this but with a different token.
 http://localhost:8889/?token=745f8234f6d0cf3b362404ba32ec7026cb6e5ea7cc960856  
