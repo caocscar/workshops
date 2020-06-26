@@ -621,12 +621,12 @@ You can check the current version of Spark using `sc.version` OR if you are outs
 `putty.exe -ssh -L localhost:8889:localhost:8889 cavium-thunderx.arc-ts.umich.edu` (Windows)  
 `ssh -L localhost:8889:localhost:8889 cavium-thunderx.arc-ts.umich.edu` (Mac/Linux)
 2. This should open a ssh client for Cavium. Log in as usual.
-3. From the Cavium terminal, type the following (replace XXXX with number between 4050 and 4099):
+3. From the Cavium terminal, type the following (replace XXXX with number between 4040 and 4150):
 ```bash
-export PYSPARK_PYTHON=/bin/python3  # set Python to 3.7; default is 2.7
+export PYSPARK_PYTHON=/bin/python3  # set Python to 3.4; default is 2.7
 export PYSPARK_DRIVER_PYTHON=jupyter  
 export PYSPARK_DRIVER_PYTHON_OPTS='notebook --no-browser --port=8889'  # same as second port listed above
-pyspark --master yarn --queue workshop --num-executors 5 --executor-cores 5 --conf spark.ui.port=XXXX
+pyspark --master yarn --queue workshop --num-executors 5 --executor-memory 1g --conf spark.ui.port=XXXX
 ```
 4. Copy/paste the URL (from your terminal where you launched jupyter notebook) into your browser. The URL should look something like this but with a different token.
 http://localhost:8889/?token=745f8234f6d0cf3b362404ba32ec7026cb6e5ea7cc960856  
