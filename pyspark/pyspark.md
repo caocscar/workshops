@@ -33,6 +33,7 @@
   - [Selecting Rows](#selecting-rows)
   - [Selecting Columns](#selecting-columns)
   - [Descriptive Statistics](#descriptive-statistics)
+  - [Count Distinct Rows](#count-distinct-rows)
   - [Renaming Columns](#renaming-columns)
   - [Adding Columns](#adding-columns)
   - [Deleting Columns](#deleting-columns)
@@ -304,6 +305,7 @@ To select rows based on a criteria use the `filter` method. `where` can also be 
 df_filter = df.filter('Longitude < -84').where('Latitude > 43')
 df_filter.show()
 ```
+
 ## Selecting Columns
 To select a subset of columns, use the `select` method with the order of column names that you want.  
 `subset = df.select('longitude','latitude','elevation')`  
@@ -313,7 +315,6 @@ You can also pass it a list of column names as we did previously.
 cols = ['longitude','latitude','elevation']
 subset = df.select(cols)
 ```
-
 **Note:** For some reason, column names are not case sensitive
 
 ## Descriptive Statistics
@@ -322,6 +323,14 @@ The `describe` method will return the following values for you for each numeric 
 summary = subset.describe(['Longitude','Latitude'])
 summary.show()
 ```
+
+## Count Distinct Rows
+The `countDistinct` method will return the number of distinct values in the set of columns. Similar to SQL syntax `COUNT DISTINCT(column)`.
+```
+subset.select(countDistinct(df.Longitude).alias('unique_longitude')).show()
+subset.select(countDistinct(df.Longitude,df.Latitude).alias('unique_gps')).show()
+```
+
 ## Renaming Columns
 There are multiple ways to rename columns. Here are three ways using the `withColumnRenamed`, `alias`, `selectExpr`  methods.
 ```python
@@ -383,12 +392,14 @@ Suppose you want to replace the RxDevice and FileId with other arbitrary values.
 newvalues = df.replace(10, 3, ['RxDevice']).replace(922233, 99, 'FileId')
 newvalues.show()
 ```
+
 ## Dropping Duplicates
 The syntax is the same as for `pandas` with the exception that the argument must be a list except when considering all the columns.
 ```
 dedupe = df.drop_duplicates(['RxDevice','FileId'])
 dedupe.show()
 ```
+
 ## Merging Data
 You can merge two DataFrames using the `join` method. The `join` method works similar to the `merge` method in `pandas`. You specify your left and right DataFrames with the `on` argument and `how` argument specifying which columns to merge on and what kind of join operation you want to perform, respectively.
 
@@ -427,12 +438,14 @@ To group by column values, use the `groupBy` method.
 counts = df.groupBy(['RxDevice','FileId']).count()
 counts.show()
 ```
+
 ## Sorting Data
 To sort by columns, use the `orderBy` method or its alias `sort`.
 ```python
 counts_sorted = counts.orderBy(["count", "RxDevice"], ascending=[True, False])
 counts_sorted.show()
 ```
+
 ## Converting to DateTime Format
 `Gentime` is in units of microseconds so we divide by a million to convert to seconds. The epoch for `Gentime` is in 2004 instead of 1970 so we add the necessary seconds to account for this.
 
