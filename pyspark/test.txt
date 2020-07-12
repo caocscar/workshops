@@ -1,0 +1,31 @@
+spark-shell --master yarn --queue cscar --num-executors 25 --executor-cores 5 --executor-memory 1g --conf spark.ui.port=4077
+spark-submit --class ReadTxtWriteParquet --master yarn --queue cscar --num-executors 25 --executor-cores 5 --executor-memory 1g --classpath JobExample.jar
+
+
+val filename = "/var/cscar-spark-workshop/bsm_sm.txt" // workshop directory
+val lines = sc.textFile(filename, sc.defaultParallelism)
+import org.apache.spark.sql.Row
+
+val columns = lines.map(line => line.split(","))
+val table = columns.map(cols => Row(cols(0).toInt, cols(1).toInt, cols(3).toLong, cols(7).toFloat,
+    cols(8).toFloat, cols(9).toFloat, cols(10).toFloat, cols(11).toFloat, cols(15).toFloat
+))
+import org.apache.spark.sql.types.{StructType, StructField, IntegerType, LongType, FloatType}
+
+val schema = StructType(Seq(
+    StructField(name="RxDevice", dataType=IntegerType, nullable=false),
+    StructField(name="FileId", dataType=IntegerType, nullable=false),
+    StructField(name="Gentime", dataType=LongType, nullable=false),
+    StructField(name="Latitude", dataType=FloatType, nullable=false),
+    StructField(name="Longitude", dataType=FloatType, nullable=false),
+    StructField(name="Elevation", dataType=FloatType, nullable=false),
+    StructField(name="Speed", dataType=FloatType, nullable=false),
+    StructField(name="Heading", dataType=FloatType, nullable=false),
+    StructField(name="Yawrate", dataType=FloatType, nullable=false)
+))
+val df = spark.createDataFrame(table, schema)
+df.show(5)
+
+val folder = "/var/cscar-spark-workshop/large"
+val df = spark.read.parquet(folder)
+

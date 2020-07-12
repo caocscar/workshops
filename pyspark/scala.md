@@ -51,6 +51,7 @@ Scala stands for SCAlable LAnguage. Scale is considered to have a more steep lea
   - [Miscellaneous Methods](#miscellaneous-methods)
   - [Official Guide to Spark SQL, DataFrames, and Datasets](#official-guide-to-spark-sql-dataframes-and-datasets)
   - [Listing files in HDFS to iterate](#listing-files-in-hdfs-to-iterate)
+  - [Running Scala as a Script (under construction)](#running-scala-as-a-script-under-construction)
 - [Exercises](#exercises)
 - [Spark UI](#spark-ui)
 - [Spark Version](#spark-version)
@@ -603,6 +604,87 @@ val filelist = flist.filter(d => d.toString.contains("2020-01")).map(_.toString)
 println(s"files: ${filelist.length}")
 ```
 We expect there to be 62 files (two per day) but we see 60 files. Closer inspection reveals Jan 28th is missing data.
+
+## Running Scala as a Script (under construction)
+http://spark.apache.org/docs/latest/submitting-applications.html
+
+If you don't run Scala through the interactive shell but rather as a Scala script. You will need some additional code at the top of your script.
+
+
+To get to the same starting point as the interactive shell, you need to start with these additional lines.
+```scala
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql._
+
+val spark = sparkSession
+  .builder()
+  .appName("My App's Name")
+  .getOrCreate()
+```
+
+Alternatively, you can create a `SparkContext()` object. This tells Spark how to access a cluster. `SparkConf()` is where you can set the configuration for your Spark application.
+```scala
+import org.apache.spark.{SparkConf, SparkContext}
+
+val conf = new SparkConf().setAppName("Alex").setMaster("local")
+val sc = new SparkContext(conf=conf)
+val sqlContext = new SQLContext(sc)
+```
+**Note:** You can only have ONE SparkContext running at once. Making your own SparkContext will not work in the interactive shell since one already exists at startup.
+
+An example script can be found at this Github gist https://gist.github.com/caocscar/9ad1e7ec7b12a654b10b04d458ade122.
+```scala
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql._
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.types.{StructType, StructField, IntegerType, LongType, FloatType}
+
+object ReadTxtWriteParquet {
+    def main(args: Array[String]) {
+        val spark = sparkSession
+          .builder()
+          .appName("CSCAR Scala Workshop")
+          .master("yarn")
+          .getOrCreate()
+
+        val sqlContext = new SQLContext(sc)
+
+        val filename = "/var/cscar-spark-workshop/bsm_sm.txt" // workshop directory
+        val lines = sc.textFile(filename, sc.defaultParallelism)
+
+        val columns = lines.map(line => line.split(","))
+        val table = columns.map(cols => Row(cols(0).toInt, cols(1).toInt, cols(3).toLong, cols(7).toFloat,
+            cols(8).toFloat, cols(9).toFloat, cols(10).toFloat, cols(11).toFloat, cols(15).toFloat
+        ))
+
+        val schema = StructType(Seq(
+            StructField(name="RxDevice", dataType=IntegerType, nullable=false),
+            StructField(name="FileId", dataType=IntegerType, nullable=false),
+            StructField(name="Gentime", dataType=LongType, nullable=false),
+            StructField(name="Latitude", dataType=FloatType, nullable=false),
+            StructField(name="Longitude", dataType=FloatType, nullable=false),
+            StructField(name="Elevation", dataType=FloatType, nullable=false),
+            StructField(name="Speed", dataType=FloatType, nullable=false),
+            StructField(name="Heading", dataType=FloatType, nullable=false),
+            StructField(name="Yawrate", dataType=FloatType, nullable=false)
+        ))
+        val df = spark.createDataFrame(table, schema)
+        val folder = 'uniqname'
+        df.write.mode("overwrite").parquet(folder)
+    }
+}
+```
+Copy the code into a new file called `job.scala`.  We can't just submit the scala file to the cluster. We need to package it as a `.jar` file. We can do this in bash using `jar cf JobExample.jar job.scala`. Your file will need a main method class
+
+Ref: https://www.baeldung.com/java-create-jar
+
+`scalac hello.scala -d hello.jar`
+
+Error: Class path contains multiple SLF4J bindings.
+Error: java.lang.ClassNotFoundException: ReadTxtWriteParquet
+
+Submit the Spark job through the command line like this.  
+`spark-submit --class --master yarn --queue cscar --num-executors 25 --executor-memory 1g --executor-cores 5 jobExample.jar`
 
 # Exercises
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
