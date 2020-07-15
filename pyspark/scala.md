@@ -51,7 +51,7 @@ Scala stands for SCAlable LAnguage. Scale is considered to have a more steep lea
   - [Miscellaneous Methods](#miscellaneous-methods)
   - [Official Guide to Spark SQL, DataFrames, and Datasets](#official-guide-to-spark-sql-dataframes-and-datasets)
   - [Listing files in HDFS to iterate](#listing-files-in-hdfs-to-iterate)
-  - [Running Scala as a Script (under construction)](#running-scala-as-a-script-under-construction)
+  - [Running a Scala Script](#running-a-scala-script)
 - [Exercises](#exercises)
 - [Spark UI](#spark-ui)
 - [Spark Version](#spark-version)
@@ -84,7 +84,7 @@ SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuT
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
 # Scala Interactive Shell
-The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings (`--executor-cores 2`) in the `default` queue.  
+The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings (`--executor-cores 2 --num-exeuctors 1 --exeuctor-memory 5g`) in the `default` queue.  
 `spark-shell --master yarn --queue default`
 
 The following line adds some custom settings.  The 'XXXX' should be a number between 4040 and 4150.  
@@ -196,7 +196,7 @@ bsm.show(5)
 We can also skip the RDD stage and go from the file to the dataframe directly.
 ```scala
 import org.apache.spark.sql._
-val df0: DataFrame = spark.read.text(filename)
+val df0: DataFrame = spark.read.csv(filename)
 
 // import spark.implicits._
 val df1 = df0.map(d => {
@@ -605,21 +605,20 @@ println(s"files: ${filelist.length}")
 ```
 We expect there to be 62 files (two per day) but we see 60 files. Closer inspection reveals Jan 28th is missing data.
 
-## Running Scala as a Script (under construction)
+## Running a Scala Script
 http://spark.apache.org/docs/latest/submitting-applications.html
 
 If you don't run Scala through the interactive shell but rather as a Scala script. You will need some additional code at the top of your script.
 
-
 To get to the same starting point as the interactive shell, you need to start with these additional lines.
 ```scala
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql._
 
 val spark = sparkSession
   .builder()
-  .appName("My App's Name")
+  .appName("My App Name")
   .getOrCreate()
+val sc = spark.sparkContext
 ```
 
 Alternatively, you can create a `SparkContext()` object. This tells Spark how to access a cluster. `SparkConf()` is where you can set the configuration for your Spark application.
@@ -630,28 +629,21 @@ val conf = new SparkConf().setAppName("Alex").setMaster("local")
 val sc = new SparkContext(conf=conf)
 val sqlContext = new SQLContext(sc)
 ```
-**Note:** You can only have ONE SparkContext running at once. Making your own SparkContext will not work in the interactive shell since one already exists at startup.
 
-An example script can be found at this Github gist https://gist.github.com/caocscar/9ad1e7ec7b12a654b10b04d458ade122.
+It's actually a bit more complicated than that though. You need to define a class and a main function. Here is an example Scala script as a github gist https://gist.github.com/caocscar/9ad1e7ec7b12a654b10b04d458ade122.
 ```scala
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql._
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.{StructType, StructField, IntegerType, LongType, FloatType}
 
-object ReadTxtWriteParquet {
+object ReadTextWriteParquet {
     def main(args: Array[String]) {
-        val spark = sparkSession
-          .builder()
-          .appName("CSCAR Scala Workshop")
-          .master("yarn")
-          .getOrCreate()
-
-        val sqlContext = new SQLContext(sc)
+        val spark = SparkSession.builder.appName("CSCAR Scala").getOrCreate()
+        val sc = spark.sparkContext
 
         val filename = "/var/cscar-spark-workshop/bsm_sm.txt" // workshop directory
         val lines = sc.textFile(filename, sc.defaultParallelism)
-
+        println("READ IN TEXT FILE")
         val columns = lines.map(line => line.split(","))
         val table = columns.map(cols => Row(cols(0).toInt, cols(1).toInt, cols(3).toLong, cols(7).toFloat,
             cols(8).toFloat, cols(9).toFloat, cols(10).toFloat, cols(11).toFloat, cols(15).toFloat
@@ -669,22 +661,34 @@ object ReadTxtWriteParquet {
             StructField(name="Yawrate", dataType=FloatType, nullable=false)
         ))
         val df = spark.createDataFrame(table, schema)
-        val folder = 'uniqname'
+        val rows = df.count()
+        println(s"ROWS = ${rows}")
+        println("WRITING TO PARQUET")
+        val folder = "uniqname"
         df.write.mode("overwrite").parquet(folder)
+        spark.stop()
     }
 }
 ```
-Copy the code into a new file called `job.scala`.  We can't just submit the scala file to the cluster. We need to package it as a `.jar` file. We can do this in bash using `jar cf JobExample.jar job.scala`. Your file will need a main method class
+However, you can't just submit this scala script like you would a Python script. You need to create a .jar file from the scala script using a Scala build tool. **sbt** is a popular scala build tool. Here are instructions on:
+1. how to install sbt
+2. setup your project directory
+3. go through a "hello world" example
+   
+https://docs.scala-lang.org/overviews/scala-book/scala-build-tool-sbt.html
 
-Ref: https://www.baeldung.com/java-create-jar
+Here is a slightly less trivial example once you have **sbt** setup on your local machine.
+http://spark.apache.org/docs/2.2.1/quick-start.html#self-contained-applications
 
-`scalac hello.scala -d hello.jar`
+Run `sbt package` or `sbt run` to create your jar file.
 
-Error: Class path contains multiple SLF4J bindings.
-Error: java.lang.ClassNotFoundException: ReadTxtWriteParquet
+You will need to copy your created jar file from to Cavium via the `scp` command like so:  
+`scp target/scala-2.11/*.jar cavium-thunderx.arc-ts.umich.edu:./`
 
 Submit the Spark job through the command line like this.  
-`spark-submit --class --master yarn --queue cscar --num-executors 25 --executor-memory 1g --executor-cores 5 jobExample.jar`
+`spark-submit --master yarn --queue default --num-executors 5 --executor-memory 1g --executor-cores 5 --class ReadTextWriteParquet <jarFilename>.jar`
+
+`spark-submit --help` for more options and defaults.
 
 # Exercises
 1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
