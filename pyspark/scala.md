@@ -51,8 +51,8 @@ Scala stands for SCAlable LAnguage. Scale is considered to have a more steep lea
   - [Miscellaneous Methods](#miscellaneous-methods)
   - [Official Guide to Spark SQL, DataFrames, and Datasets](#official-guide-to-spark-sql-dataframes-and-datasets)
   - [Listing files in HDFS to iterate](#listing-files-in-hdfs-to-iterate)
-  - [Running a Scala Script](#running-a-scala-script)
 - [Exercises](#exercises)
+- [Running a Scala Script](#running-a-scala-script)
 - [Spark UI](#spark-ui)
 - [Spark Version](#spark-version)
 
@@ -84,7 +84,7 @@ SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuT
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
 
 # Scala Interactive Shell
-The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings (`--executor-cores 2 --num-exeuctors 1 --exeuctor-memory 5g`) in the `default` queue.  
+The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings (`--num-exeuctors 1 --executor-cores 2 --exeuctor-memory 1g`) in the `default` queue.  You can type `spark-shell --help` in the terminal to see other options but also see the default settings.
 `spark-shell --master yarn --queue default`
 
 The following line adds some custom settings.  The 'XXXX' should be a number between 4040 and 4150.  
@@ -605,7 +605,12 @@ println(s"files: ${filelist.length}")
 ```
 We expect there to be 62 files (two per day) but we see 60 files. Closer inspection reveals Jan 28th is missing data.
 
-## Running a Scala Script
+# Exercises
+1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
+2. Create a two column DataFrame that returns a unique set of device-trip ids (RxDevice, FileId) sorted by RxDevice in ascending order and then FileId in descending order.
+3. Create a two column DataFrame that returns two columns (RxDevice, Trips) for RxDevices with more than 60 trips.
+
+# Running a Scala Script
 http://spark.apache.org/docs/latest/submitting-applications.html
 
 If you don't run Scala through the interactive shell but rather as a Scala script. You will need some additional code at the top of your script.
@@ -636,7 +641,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.{StructType, StructField, IntegerType, LongType, FloatType}
 
-object ReadTextWriteParquet {
+object ReadTextWriteParquet { // class name
     def main(args: Array[String]) {
         val spark = SparkSession.builder.appName("CSCAR Scala").getOrCreate()
         val sc = spark.sparkContext
@@ -685,15 +690,10 @@ Run `sbt package` or `sbt run` to create your jar file.
 You will need to copy your created jar file from to Cavium via the `scp` command like so:  
 `scp target/scala-2.11/*.jar cavium-thunderx.arc-ts.umich.edu:./`
 
-Submit the Spark job through the command line like this.  
-`spark-submit --master yarn --queue default --num-executors 5 --executor-memory 1g --executor-cores 5 --class ReadTextWriteParquet <jarFilename>.jar`
+Submit the Spark job through the command line like this using the class name specified in your scala script.
+`spark-submit --master yarn --queue default --num-executors 5 --executor-cores 5 --executor-memory 1g --class ReadTextWriteParquet <jarFilename>.jar`
 
-`spark-submit --help` for more options and defaults.
-
-# Exercises
-1. Return the number of points in the area with latitude in [43,44] and longitude in [-84,-83].
-2. Create a two column DataFrame that returns a unique set of device-trip ids (RxDevice, FileId) sorted by RxDevice in ascending order and then FileId in descending order.
-3. Create a two column DataFrame that returns two columns (RxDevice, Trips) for RxDevices with more than 60 trips.
+Recall that you can type `spark-submit --help` for more options and defaults.
 
 # Spark UI
 This is a GUI to see active and completed Spark jobs.
@@ -703,3 +703,4 @@ http://cavium-thunderx.arc-ts.umich.edu:4050
 
 # Spark Version
 You can check the current version of Spark using `sc.version` OR if you are outside of the PySpark interactive shell `spark-shell --version`.
+
