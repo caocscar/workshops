@@ -371,7 +371,7 @@ The `countDistinct` method will return the number of distinct values in the set 
 import org.apache.spark.sql.functions.countDistinct
 
 subset.agg(countDistinct("Longitude") as "unique_longitude").show()
-subset.select(countDistinct("Longitude","Latitude") as "unique_gps").show()
+subset.agg(countDistinct("Longitude","Latitude") as "unique_gps").show()
 ```
 
 ## Renaming Columns
