@@ -35,6 +35,7 @@ Scala stands for SCAlable LAnguage. Scale is considered to have a more steep lea
   - [Selecting Rows](#selecting-rows)
   - [Selecting Columns](#selecting-columns)
   - [Descriptive Statistics](#descriptive-statistics)
+  - [Count Distinct Rows](#count-distinct-rows)
   - [Renaming Columns](#renaming-columns)
   - [Adding Columns](#adding-columns)
   - [Deleting Columns](#deleting-columns)
@@ -362,6 +363,15 @@ The `describe` method will return the following values for you for each numeric 
 ```scala
 val summary = subset.describe("Longitude","Latitude")
 summary.show()
+```
+
+## Count Distinct Rows
+The `countDistinct` method will return the number of distinct values in the set of columns. Similar to SQL syntax `COUNT DISTINCT(column)`.
+```scala
+import org.apache.spark.sql.functions.countDistinct
+
+subset.agg(countDistinct("Longitude") as "unique_longitude").show()
+subset.select(countDistinct("Longitude","Latitude") as "unique_gps").show()
 ```
 
 ## Renaming Columns
