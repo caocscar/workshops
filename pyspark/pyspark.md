@@ -321,16 +321,19 @@ subset = df.select(cols)
 
 ## Descriptive Statistics
 The `describe` method will return the following values for you for each numeric column: count, mean, standard deviation, minimum, and maximum.
-```
+```python
 summary = subset.describe(['Longitude','Latitude'])
 summary.show()
 ```
 
 ## Count Distinct Rows
 The `countDistinct` method will return the number of distinct values in the set of columns. Similar to SQL syntax `COUNT DISTINCT(column)`.
-```
-subset.select(countDistinct(df.Longitude).alias('unique_longitude')).show()
-subset.select(countDistinct(df.Longitude,df.Latitude).alias('unique_gps')).show()
+```python
+from pyspark.sql.functions import countDistinct
+
+subset.agg(countDistinct('Longitude').alias('unique_longitude')).show()
+subset.select(countDistinct("Longitude","Latitude").alias('unique_gps')).show() 
+# you can also use countDistinct(df.Longitude, df.Latitude)
 ```
 
 ## Renaming Columns
