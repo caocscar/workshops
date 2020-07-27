@@ -8,6 +8,7 @@
     - [Introduction Spark Overview](#introduction-spark-overview)
     - [APIs](#apis)
   - [UM Hadoop Cluster](#um-hadoop-cluster)
+- [Using Python 3](#using-python-3)
 - [PySpark Interactive Shell](#pyspark-interactive-shell)
   - [Exit Interactive Shell](#exit-interactive-shell)
   - [Data](#data)
@@ -76,14 +77,15 @@ Spark has API bindings to **Scala, Java, Python and R**. The official documentat
 
 The Spark Python API documentation can be found at https://spark.apache.org/docs/2.2.1/api/python/index.html.  We will mostly deal with the `pyspark.sql` module https://spark.apache.org/docs/2.2.1/api/python/pyspark.sql.html.
 
-## UM Hadoop Cluster
-For Cavium  
+## UM Hadoop Cluster (Cavium)
 SSH to `cavium-thunderx.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Cavium account and two-factor authentication.
 
-For Flux Hadoop  
-SSH to `flux-hadoop-login.arc-ts.umich.edu` `Port 22` using a SSH client (e.g. PuTTY on Windows) and login using your Flux account and two-factor authentication.
-
 **Note:** ARC-TS has a [Getting Started with Hadoop User Guide](http://arc-ts.umich.edu/new-hadoop-user-guide/)
+
+## Using Python 3
+The current default python version for pyspark is 2.7. To set it up for Python 3, type the following in the terminal before launching the shell.
+
+`export PYSPARK_PYTHON=/sw/dsi/aarch64/centos7/python/3.7.4/bin/python3`
 
 # PySpark Interactive Shell
 The interactive shell is analogous to a python console. The following command starts up the interactive shell for PySpark with default settings in the `workshop` queue.  
@@ -643,7 +645,7 @@ You can check the current version of Spark using `sc.version` OR if you are outs
 2. This should open a ssh client for Cavium. Log in as usual.
 3. From the Cavium terminal, type the following (replace XXXX with number between 4040 and 4150):
 ```bash
-export PYSPARK_PYTHON=/bin/python3  # set Python to 3.4; default is 2.7
+export PYSPARK_PYTHON=/sw/dsi/aarch64/centos7/python/3.7.4/bin/python3  # set Python version to 3.X ; default is 2.7
 export PYSPARK_DRIVER_PYTHON=jupyter  
 export PYSPARK_DRIVER_PYTHON_OPTS='notebook --no-browser --port=8889'  # same as second port listed above
 pyspark --master yarn --queue default --num-executors 5 --executor-memory 1g --conf spark.ui.port=XXXX
