@@ -306,7 +306,7 @@ df.count() # 155785661
 ### Set up a Temp Table
 To create a temporary table for SQL queries, you can use either the `registerTempTable` or `createOrReplaceTempView` method.
 
-`df.registerTempTable("Bsm"")` OR `df.createOrReplaceTempView("Bsm")`
+`df.registerTempTable("Bsm")` OR `df.createOrReplaceTempView("Bsm")`
 
 ### SQL Queries
 Then you can start querying the table like a regular database using SQL. BTW, I also run a Intro SQL workshop for CSCAR.
@@ -352,7 +352,7 @@ To select rows based on a criteria use the `filter` method. `where` can also be 
 val df_filter = df.filter("Longitude < -84").where("Latitude > 43")
 df_filter.show()
 ```
-This above uses a SQL expression. Similarly, you could have used
+This above uses two SQL expressions. Similarly, you could combine the two expressions into one.
 ```scala
 val df_filter = df.filter("Longitude < -84 AND Latitude > 43")
 df_filter.show()
@@ -401,7 +401,6 @@ To grab individual elements from a DataFrame
 ```scala
 val result = unique_rows1.head().getLong(0)
 ```
-
 
 ## Renaming Columns
 There are multiple ways to rename columns. Here are three ways using the `withColumnRenamed`, `as` methods.
