@@ -334,8 +334,10 @@ The `countDistinct` method will return the number of distinct values in the set 
 ```python
 from pyspark.sql.functions import countDistinct
 
-subset.agg(countDistinct('Longitude').alias('unique_longitude')).show()
-subset.agg(countDistinct("Longitude","Latitude").alias('unique_gps')).show() 
+unique_rows1 = subset.agg(countDistinct('Longitude').alias('unique_longitude')).persist()
+unique_rows1.show()
+unique_rows2 = subset.agg(countDistinct("Longitude","Latitude").alias('unique_gps'))
+unique_rows2.show()
 # you can also use countDistinct(df.Longitude, df.Latitude)
 ```
 
