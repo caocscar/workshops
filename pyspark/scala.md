@@ -33,9 +33,11 @@ Scala stands for SCAlable LAnguage. Scale is considered to have a more steep lea
   - [Row Count](#row-count)
   - [Column Info](#column-info)
   - [Selecting Rows](#selecting-rows)
+  - [NULL Values](#null-values)
   - [Selecting Columns](#selecting-columns)
   - [Descriptive Statistics](#descriptive-statistics)
   - [Count Distinct Rows](#count-distinct-rows)
+  - [Grabbing Values from DataFrame](#grabbing-values-from-dataframe)
   - [Renaming Columns](#renaming-columns)
   - [Adding Columns](#adding-columns)
   - [Deleting Columns](#deleting-columns)
@@ -350,6 +352,23 @@ To select rows based on a criteria use the `filter` method. `where` can also be 
 val df_filter = df.filter("Longitude < -84").where("Latitude > 43")
 df_filter.show()
 ```
+This above uses a SQL expression. Similarly, you could have used
+```scala
+val df_filter = df.filter("Longitude < -84 AND Latitude > 43")
+df_filter.show()
+```
+Alternatively, you an also use the `$` (Column) notation:
+```scala
+val df_filter = df.filter($"Longitude" < -84).where($"Latitude" > 43)
+df_filter.show()
+```
+
+## NULL Values
+Use the `isNull` and `isNotNull` method to include or exclude null values.
+```scala
+val df_notnull = df.filter($"Longitude".isNotNull)
+val df_null = df.filter($"Latitude".isNull)
+```
 
 ## Selecting Columns
 To select a subset of columns, use the `select` method with the order of column names that you want.  
@@ -370,9 +389,19 @@ The `countDistinct` method will return the number of distinct values in the set 
 ```scala
 import org.apache.spark.sql.functions.countDistinct
 
-subset.agg(countDistinct("Longitude") as "unique_longitude").show()
-subset.agg(countDistinct("Longitude","Latitude") as "unique_gps").show()
+val unique_rows1 = subset.agg(countDistinct("Longitude") as "unique_longitude").persist()
+unique_rows1.show()
+val unique_rows2 = subset.agg(countDistinct("Longitude","Latitude") as "unique_gps")
+unique_rows2.show()
 ```
+
+## Grabbing Values from DataFrame
+http://spark.apache.org/docs/1.4.1/api/scala/#org.apache.spark.sql.DataFrame
+To grab individual elements from a DataFrame
+```scala
+val result = unique_rows1.head().getLong(0)
+```
+
 
 ## Renaming Columns
 There are multiple ways to rename columns. Here are three ways using the `withColumnRenamed`, `as` methods.
