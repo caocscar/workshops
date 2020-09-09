@@ -45,6 +45,7 @@ Scala stands for SCAlable LAnguage. Scale is considered to have a more steep lea
   - [Replacing Values](#replacing-values)
   - [Dropping Duplicates](#dropping-duplicates)
   - [Merging Data](#merging-data)
+  - [Appending Data](#appending-data)
   - [Grouping Data](#grouping-data)
   - [Sorting Data](#sorting-data)
   - [Converting to DateTime Format](#converting-to-datetime-format)
@@ -451,7 +452,7 @@ val newdf = df.withColumn("lengthYawrate", string_length($"Yawrate"))
 newdf.show()
 ```
 OR
-```
+```scala
 val newdf = df.select($"Yawrate", string_length($"Yawrate").alias("lengthYaw"))
 newdf.show()
 ```
@@ -459,14 +460,14 @@ newdf.show()
 
 ## Replacing Values
 Suppose you want to replace the RxDevice with other arbitrary values.
-```
+```scala
 val newvalues = df.withColumn("RxDevice", when(col("RxDevice") === 2767, 77).otherwise(col("RxDevice")) )
 newvalues.show()
 ```
 
 ## Dropping Duplicates
 The syntax is the same as for `pandas` with the exception that the argument must be a list except when considering all the columns.
-```
+```scala
 val dropColumns = Seq("RxDevice","FileId")
 val dedupe = df.dropDuplicates(dropColumns)
 dedupe.show()
@@ -481,14 +482,14 @@ and pass the list to the `on` argument.
 
 The different how (join) options are: `inner, cross, outer, full, full_outer, left, left_outer, right, right_outer, left_semi, left_anti.`
 The default join is `inner` as with most programs.
-```
+```scala
 val Left = df.select("RxDevice","FileId","Gentime","Heading","Yawrate","Speed")
 val Right = df.select("RxDevice","FileId","Gentime","Longitude","Latitude","Elevation")
 val Merge = Left.join(Right, Seq("RxDevice","FileId","Gentime"), "inner")
 Merge.show(5)
 ```
 Now, here is a merge example where the column names are different and the same. You should get a warning about merging identically named columns this way.  `WARN sql.Column: Constructing trivially true equals predicate, 'FileId#1L = FileId#1L'. Perhaps you need to use aliases.` We'll see the issues with it shortly.
-```
+```scala
 val R = Right.withColumnRenamed("Gentime","T")
 val M = Left.join(R, Left("Gentime") <=> R("T") && Left("FileId") <=> R("FileId"))
 M.show(5)
@@ -502,6 +503,14 @@ You will get an error that looks something like this.
 You can't drop the duplicate columns or rename them because they have the same name and you can't reference them by index like in `pandas`.
 
 So when you are merging on columns that have some matching and non-matching names, the best solution I can find is to rename the columns so that they are either all matching or all non-matching. You should also rename any column names that are the same in the Left and Right DataFrame that are not part of the merge condition otherwise you will run into the same issue.
+
+## Appending Data
+You can append two DataFrames using the `union` method. It only works if the two DataFrames have the same schema though.
+```scala
+val df_filter = df.filter("Latitude < 43")
+val df_filter2 = df.filter("Latitude > 43")
+val DF = df_filter.union(df_filter2)
+```
 
 ## Grouping Data
 To group by column values, use the `groupBy` method.
@@ -565,13 +574,13 @@ bins.show()
 **Note:** The imperfection of the bin size is due to data quality.
 
 You can check the result with SparkSQL
-```
+```scala
 dfbins.registerTempTable("table")
 val records = spark.sql("SELECT bins, COUNT(*) as ct FROM table GROUP BY bins ORDER BY bins")
 records.show()
 ```
 Alternatively, you check the result with DataFrames by creating a contingency table using the `crosstab` method against a constant column.
-```
+```scala
 import org.apache.spark.sql.DataFrameStatFunctions
 
 val dfbins2 = dfbins.withColumn("constant', lit(77) )
