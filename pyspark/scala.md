@@ -529,7 +529,7 @@ counts_sorted.show()
 ## Converting to DateTime Format
 `Gentime` is in units of microseconds so we divide by a million to convert to seconds. The epoch for `Gentime` is in 2004 instead of 1970 so we add the necessary seconds to account for this.
 
-`from_unixtime` will return a date as a string type
+`from_unixtime` will return a date as a string type and in the current system time zone
 ```scala
 import org.apache.spark.sql.functions.from_unixtime
 
