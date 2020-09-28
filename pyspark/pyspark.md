@@ -661,7 +661,10 @@ If the first localhost port is different from the second, then change the url to
 5. You should be connected.
 
 # Solutions
-These are the PySpark version of the solutions.
-1. `df.filter('Latitude >= 43 and Latitude <= 44').where('Longitude >= -84 and Longitude <= -83').count()`
-2. `df.select('RxDevice', 'FileId').orderBy(['RxDevice', 'FileId'], ascending = [True, False]).distinct().show()`
-3. `df.select('RxDevice', 'FileId').groupby('RxDevice').agg(countDistinct('FileId').alias('Trips')).filter('Trips > 60').show()`
+<details>
+  <summary>Click to view PySpark solutions</summary>
+
+  1. `df.filter('Latitude >= 43 and Latitude <= 44').where('Longitude >= -84 and Longitude <= -83').count()`
+  2. `df.select('RxDevice', 'FileId').orderBy(['RxDevice', 'FileId'], ascending = [True, False]).distinct().show()`
+  3. `df.select('RxDevice', 'FileId').groupby('RxDevice').agg(countDistinct('FileId').alias('Trips')).filter('Trips > 60').show()`
+</details>
