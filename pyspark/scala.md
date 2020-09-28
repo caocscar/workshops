@@ -301,7 +301,7 @@ Before we move forward, let's make sure we are working with the large version of
 ```scala
 val folder = "/var/cscar-spark-workshop/large"
 val df = spark.read.parquet(folder)
-df.count() # 155785661
+df.count() // 155785661
 ```
 
 ### Set up a Temp Table

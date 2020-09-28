@@ -55,6 +55,7 @@
 - [Spark UI](#spark-ui)
 - [Spark Version](#spark-version)
 - [Using Jupyter Notebook with PySpark](#using-jupyter-notebook-with-pyspark)
+- [Solutions](#solutions)
 
 ## Apache Spark Ecosystem
 - **SparkSQL + DataFrames**
@@ -658,3 +659,9 @@ http://localhost:8889/?token=745f8234f6d0cf3b362404ba32ec7026cb6e5ea7cc960856
 If the first localhost port is different from the second, then change the url to match the first port number in order for Jupyter notebook to show up.
 
 5. You should be connected.
+
+# Solutions
+These are the PySpark version of the solutions.
+1. `df.filter('Latitude >= 43 and Latitude <= 44').where('Longitude >= -84 and Longitude <= -83').count()`
+2. `df.select('RxDevice', 'FileId').orderBy(['RxDevice', 'FileId'], ascending = [True, False]).distinct().show()`
+3. `df.select('RxDevice', 'FileId').groupby('RxDevice').agg(countDistinct('FileId').alias('Trips')).filter('Trips > 60').show()`
