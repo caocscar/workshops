@@ -7,8 +7,12 @@ Query Syntax Covered:
 - CASE
 - WHEN
 - ROLLUP
+- GROUPING
 - REPLACE
 - OVER (Window Functions)
+- RANK
+- DENSE_RANK
+- WINDOW
 - PARTITION BY
 - WITH (Common Table Expressions)
 
