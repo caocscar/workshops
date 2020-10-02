@@ -34,3 +34,43 @@ Schema Syntax Covered:
 - MODIFY COLUMN
 - UPDATE
 - INDEX
+
+<details>
+  <summary>Solutions Hiding Here</summary>
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+  
+  ```SQL
+  ```
+</details>
