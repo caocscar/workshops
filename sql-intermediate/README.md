@@ -35,6 +35,7 @@ Schema Syntax Covered:
 - UPDATE
 - INDEX
 
+## Appendix
 <details>
   <summary>Solutions Hiding Here</summary>
   
