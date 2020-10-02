@@ -74,7 +74,7 @@ GROUP BY County WITH ROLLUP
 #### Practice 2b  
 ```SQL
 SELECT 
-	IF(GROUPING(County),'Michigan Total', IF(GROUPING(CP), 'County Total', County)) AS COUNTY,
+    IF(GROUPING(County),'Michigan Total', IF(GROUPING(CP), 'County Total', County)) AS COUNTY,
     SUM(Deaths) AS DeathTotal,
     CP
 FROM Covid
@@ -96,7 +96,7 @@ AND CP = 'Confirmed'
 #### Practice 3b
 ```SQL
 SELECT County, Day, Cases,
-	LAG(Cases, 7) OVER (ORDER BY Day) As 'WeekAgo' 
+    LAG(Cases, 7) OVER (ORDER BY Day) As 'WeekAgo' 
 FROM Covid
 WHERE County = 'Wayne' AND CP = 'Confirmed'
 ORDER BY Day DESC
