@@ -2,6 +2,12 @@
 
 Here is the [Google Slide Deck](https://docs.google.com/presentation/d/1sx7FL58BHbzPWb59Tq1S38QBL1KjNEjse3IyqK4nohY/edit?usp=sharing) for the workshop.
 
+Link to online database [db-fiddle](https://www.db-fiddle.com)
+
+Link to the [Covid dataset](https://gist.github.com/caocscar/b9a1418e5fd9c2cd69bb6f9d67fbc05a)
+<hr>
+
+## Workshop Material
 Query Syntax Covered:
 - IF
 - CASE
